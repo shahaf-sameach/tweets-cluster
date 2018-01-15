@@ -1,0 +1,9 @@
+# ide related files
+.idea
+
+# python related files
+*.pyc
+
+# app related files
+local_settings.py
+
