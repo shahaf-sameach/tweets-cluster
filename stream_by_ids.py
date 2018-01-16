@@ -86,7 +86,7 @@ logging.debug("main start")
 
 tweets_to_download = []
 logging.debug("reading tweets_ids.txt...")
-with open('tweets_ids.txt', 'r') as f:
+with open('files/tweets_ids.txt', 'r') as f:
   for line in f:
     tweets_to_download.append(line.strip())
 logging.debug("read {} tweets".format(len(tweets_to_download)))

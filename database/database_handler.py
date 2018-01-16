@@ -1,6 +1,6 @@
 from pymongo import MongoClient
 from settings import MongoSettings
-from tweet import Tweet
+from model.tweet import Tweet
 
 class Database(object):
 
@@ -8,7 +8,7 @@ class Database(object):
     self.client = MongoClient()
     self.client = MongoClient(MongoSettings.host, MongoSettings.port)
     self.db = self.client[MongoSettings.db]
-    self.db.authenticate(MongoSettings.user, MongoSettings.pwd)
+    #self.db.authenticate(MongoSettings.user, MongoSettings.pwd)
 
   def get_all_tweets_ids(self):
     return [t['id'] for t in self.db.tweets.find({}, {'id' : 1})]

@@ -1,3 +1,5 @@
 MyApp
 pymongo==3.4.0
 oauth2==1.9.0.post1
+oauthlib>=0.6.2
+requests-oauthlib==0.8.0

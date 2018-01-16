@@ -29,7 +29,7 @@ def read_file(file_name, q):
 
 if __name__ == '__main__':
   num_worker_threads = 2
-  mypath = "tweets/"
+  mypath = "files/tweets/"
 
   onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
 
@@ -45,7 +45,8 @@ if __name__ == '__main__':
     t.start()
 
   for file_name in onlyfiles:
-    q.put("tweets/" + file_name)
+    if len(file_name) > 5:
+      q.put(mypath + file_name)
 
   q.join()       
   t1 = time()
@@ -53,6 +54,6 @@ if __name__ == '__main__':
 
   print "took %s sec" %(t1 -t0)
 
-  with open('tweets_ids.txt', 'a') as f:
+  with open('files/tweets_ids.txt', 'a') as f:
     while not res_q.empty():
       f.write(res_q.get() + '\n')
