@@ -1,10 +1,13 @@
-from os import listdir
-from os.path import isfile, join
+import os
 from time import time
 import threading, Queue
 import logging
 
 logging.basicConfig(level=logging.DEBUG, format='(%(threadName)-10s) %(message)s')
+
+
+dir = os.path.dirname(__file__)
+dir_path = os.path.join(dir, '../files/tweets/')
 
 def worker(pool, result):
   while True:
@@ -29,9 +32,8 @@ def read_file(file_name, q):
 
 if __name__ == '__main__':
   num_worker_threads = 2
-  mypath = "files/tweets/"
 
-  onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+  onlyfiles = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
   tweets_ids = []
 
@@ -46,7 +48,7 @@ if __name__ == '__main__':
 
   for file_name in onlyfiles:
     if len(file_name) > 5:
-      q.put(mypath + file_name)
+      q.put(dir_path + file_name)
 
   q.join()       
   t1 = time()
@@ -54,6 +56,6 @@ if __name__ == '__main__':
 
   print "took %s sec" %(t1 -t0)
 
-  with open('files/tweets_ids.txt', 'a') as f:
+  with open(dir_path + 'tweets_ids.txt', 'a') as f:
     while not res_q.empty():
       f.write(res_q.get() + '\n')

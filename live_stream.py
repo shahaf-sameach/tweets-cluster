@@ -42,7 +42,7 @@ def main():
           db.insert_tweet(tweet)
           logger.debug(u"inserted tweet {} to db".format(tweet['id']))
         except Exception as e:
-          logger.error(u"error inserting tweet {} to database".format(tweet['id']))
+          logger.error(u"error inserting tweet {} to database: {}".format(tweet['id'], e))
 
         current_amount_of_queries = ts.get_statistics()[0]
 

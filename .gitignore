@@ -5,5 +5,7 @@
 *.pyc
 
 # app related files
+/logs/*
+/files/*
 local_settings.py
 
