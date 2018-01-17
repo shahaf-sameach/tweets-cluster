@@ -84,13 +84,16 @@ def insert_to_db(data):
 
 logging.debug("main start")
 
+dir = os.path.dirname(__file__)
+dir_path = os.path.join(dir, '../files/tweets/')
+
 tweets_to_download = []
 logging.debug("reading tweets_ids.txt...")
-with open('files/tweets/tweets_ids.txt', 'r') as f:
+with open(dir_path + 'tweets_ids.txt', 'r') as f:
   for line in f:
     tweets_to_download.append(line.strip())
 
-with open('files/tweets/tweets_ids2.txt', 'r') as f:
+with open(dir_path + 'tweets_ids2.txt', 'r') as f:
   for line in f:
     tweets_to_download.append(line.strip())
 logging.debug("read {} tweets".format(len(tweets_to_download)))
