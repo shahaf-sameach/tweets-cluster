@@ -27,15 +27,6 @@ class User:
 class TwitterSettings:
   all_users = [User(user) for user in users]
 
-class MongoSettings:
-  host = 'ds113915.mlab.com'
-  port = 13915
-
-  user = 'shahaf'
-  pwd = 'aq1sw2de3'
-  db = 'twitter-db'
-
-
 try :
   from local_settings import *
 except ImportError:

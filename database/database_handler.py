@@ -1,6 +1,8 @@
 from pymongo import MongoClient
 from settings import MongoSettings
 from model.tweet import Tweet
+from dateutil.parser import parse
+
 
 class Database(object):
 
@@ -42,10 +44,23 @@ class Database(object):
   def get_random_tweet(self):
     return self.db.tweets.find_one()
 
+  def update_date(self):
+    results = self.db.tweets.find({ "created_at_date" : { "$exists" : False } })
+    count = results.count()
+    counter = 1
+    for t in results:
+      t['created_at_date'] = parse(t['created_at'])
+      self.db.tweets.save(t)
+      print "done tweet[{}] {}/{}".format(t['_id'],counter,count)
+      counter += 1
 if __name__ == '__main__':
   db = Database()
-  t = db.get_random_tweet()
-  tweet = Tweet(t)
-  print tweet.hashtags
-  
+  #t = db.get_random_tweet()
+  #print t
+  #tweet = Tweet(t)
+  #print tweet.hashtags
+  #t = db.update_date()
+  #print t
+  db.update_date()
+  print "done"
 
