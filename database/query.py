@@ -10,8 +10,10 @@ class Database(object):
         self.client = MongoClient()
         self.client = MongoClient(MongoSettings.host, MongoSettings.port)
         self.db = self.client[MongoSettings.db]
-        if MongoSettings.pwd:
+        try:
             self.db.authenticate(MongoSettings.user, MongoSettings.pwd)
+        except:
+            pass
 
     def get_all_tweets_ids(self):
         return [t['_id'] for t in self.db.tweets.find({}, {'_id': 1})]
