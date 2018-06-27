@@ -1,3 +1,8 @@
+bson
+numpy
+gensim
+nltk
+scikit-learn
 MyApp
 pymongo==3.4.0
 oauth2==1.9.0.post1

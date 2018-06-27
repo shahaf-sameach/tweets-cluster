@@ -2,7 +2,7 @@ import time
 import logging
 import json
 from TwitterSearch import TwitterSearch, TwitterSearchOrder, TwitterSearchException
-from database.database_handler import Database
+from database.query import Database
 from settings import TwitterSettings
 
 def main():

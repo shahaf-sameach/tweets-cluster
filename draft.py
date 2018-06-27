@@ -1,18 +1,11 @@
-from datetime import date
-import inspect
 
-data_dict = {'var1': 'Data1', 'var2': 'Data2'}
-
-
-class MyAwesomeClass:
-
-  def __init__(self, data_dict):
-    for key, value in data_dict.iteritems():
-      setattr(self, key, value)
+some_list = [2343, 323, 34254, 49, 595]
+sorted_list = sorted(some_list, key=lambda x : x%10)
+print(sorted_list)
 
 
-if __name__ == '__main__':
-  a = MyAwesomeClass(data_dict)
-  print a.var1
+def custom_compare(x, y):
+    return x % 10 - y % 10
 
 
+print(sorted(some_list, cmp=custom_compare))

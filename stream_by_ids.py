@@ -1,16 +1,13 @@
-import json
 import threading, Queue
 import logging
 import os
 
 from time import sleep
-from datetime import date
 
 from settings import TwitterSettings
 from api.twitter_api import Twitter
-from database.database_handler import Database
+from database.query import Database
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s (%(threadName)-10s) %(message)s')
 
 task_pool = Queue.Queue()
 tweets_pool = Queue.Queue()
@@ -23,7 +20,7 @@ def tweet_worker():
     try:
       insert_to_db(data)
     except Exception as e:
-      logging.error("error handle response {} got {}".format(tweet, e))
+      logging.error("error insert to db got {}".format(tweet, e))
     tweets_pool.task_done()
 
 
@@ -123,5 +120,5 @@ for tweet in tweets:
 task_pool.join()
 tweets_pool.join()
 
-logging.debug("proccess end")
+logging.debug("finished")
   

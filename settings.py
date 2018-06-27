@@ -1,3 +1,5 @@
+import logging
+
 users = [
 {'access_key' : "893338040-Xwr6feArQMSw4aZFtelB1uJltJu8KO7ntVuJjxGA",
  'access_secret' : "uZiNMkZVjSQIAyI7eGfWIiBZavLCrxjqVBnzRm3DYIxV4",
@@ -26,6 +28,9 @@ class User:
 
 class TwitterSettings:
   all_users = [User(user) for user in users]
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s (%(threadName)-10s) %(message)s')
+
 
 try :
   from local_settings import *
