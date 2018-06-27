@@ -29,7 +29,7 @@ class User:
 class TwitterSettings:
   all_users = [User(user) for user in users]
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s (%(threadName)-10) [%(funcName)-10s]) %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s (%(threadName)-10s) [%(funcName)-10s] %(message)s')
 
 
 try :
