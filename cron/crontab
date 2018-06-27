@@ -1,5 +1,5 @@
 # live stream
-*/5 * * * * /home/ir/sameacs/tweets-cluster/cron/live_stream_watchdog.sh >> /home/ir/sameacs/tweets-cluster/log/watchdog.log 2>&1
+*/5 * * * * /home/ir/sameacs/tweets-cluster/cron/live_stream_watchdog.sh >> /home/ir/sameacs/tweets-cluster/logs/watchdog.log 2>&1
 
 # ids stream
-*/5 * * * * /home/ir/sameacs/tweets-cluster/cron/ids_stream_watchdog.sh >> /home/ir/sameacs/tweets-cluster/log/watchdog.log 2>&1
+*/5 * * * * /home/ir/sameacs/tweets-cluster/cron/ids_stream_watchdog.sh >> /home/ir/sameacs/tweets-cluster/logs/watchdog.log 2>&1

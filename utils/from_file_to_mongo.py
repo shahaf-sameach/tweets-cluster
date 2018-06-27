@@ -1,6 +1,6 @@
 import argparse
 import json
-from database_handler import Database
+from database.query import Database
 
 parser = argparse.ArgumentParser(description='read tweets file')
 parser.add_argument('file_name', type=str, help='file name to read from')

@@ -1,5 +1,6 @@
 # ide related files
 .idea
+.DS_Store
 
 # python related files
 *.pyc
@@ -9,3 +10,11 @@
 /files/*
 local_settings.py
 
+/output/*
+
+tweets.p
+
+ids_stream_watchdog.sh
+live_stream_watchdog.sh
+*.log
+/pids/*
