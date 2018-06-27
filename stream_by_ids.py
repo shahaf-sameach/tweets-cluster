@@ -9,22 +9,23 @@ from api.twitter_api import Twitter
 from database.query import Database
 
 
-task_pool = Queue.Queue()
-tweets_pool = Queue.Queue()
+download_task_pool = Queue.Queue()
+db_task_pool = Queue.Queue()
 
 num_worker_threads = 10
 
-def tweet_worker():
+def db_worker():
   while True:
-    data = tweets_pool.get()
+    data = db_task_pool.get()
     try:
       insert_to_db(data)
+      logging.debug("inserted tweet {} out of apx {}".format(data['id'], db_task_pool.qsize()))
     except Exception as e:
       logging.error("error insert to db got {}".format(tweet, e))
-    tweets_pool.task_done()
+    db_task_pool.task_done()
 
 
-def worker():
+def download_worker():
   current_user, cycled_users = 0, 0
   while True:
     if cycled_users == 1:
@@ -39,7 +40,7 @@ def worker():
 
     user = TwitterSettings.all_users[current_user]
     while True:
-      tweet_id = task_pool.get()
+      tweet_id = download_task_pool.get()
       try:
         status, result = get_tweet(tweet_id, user)
         
@@ -48,14 +49,14 @@ def worker():
           current_user += 1
           break
 
-        tweets_pool.put((tweet_id, status, result))
+        db_task_pool.put((tweet_id, status, result))
       except Exception as e:
         logging.error("error handle tweet {} got {}".format(tweet_id, e))
       
-      task_pool.task_done()
+      download_task_pool.task_done()
 
 def get_tweet(tweet_id, user):
-  logging.debug("trying to download tweet {} out of apx {}".format(tweet_id, task_pool.qsize()))
+  logging.debug("trying to download tweet {} out of apx {}".format(tweet_id, download_task_pool.qsize()))
   
   twitter = Twitter()
   
@@ -106,19 +107,19 @@ tweets = set(tweets_to_download).difference(tweets_2xx.union(tweets_4xx))
 logging.debug("working on {} tweets".format(len(tweets)))
 
 for i in range(num_worker_threads):
-  t = threading.Thread(target=worker, args=())
+  t = threading.Thread(target=download_worker, args=())
   t.setDaemon(True)
   t.start()
 
-t = threading.Thread(target=tweet_worker, args=())
+t = threading.Thread(target=db_worker, args=())
 t.setDaemon(True)
 t.start()
 
 for tweet in tweets:
-  task_pool.put(tweet)
+  download_task_pool.put(tweet)
 
-task_pool.join()
-tweets_pool.join()
+download_task_pool.join()
+db_task_pool.join()
 
 logging.debug("finished")
   
