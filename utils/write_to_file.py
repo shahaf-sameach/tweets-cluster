@@ -17,7 +17,7 @@ def worker(pool, result):
 
 
 def read_file(file_name, q):
-  logging.debug("working on %s" %file_name)
+  logging.debug("working on %s out of %s files" %(file_name, q.qsize()))
   
   with open(file_name, 'r') as f:
     for line in f:
@@ -31,7 +31,7 @@ def read_file(file_name, q):
 
 
 if __name__ == '__main__':
-  num_worker_threads = 2
+  num_worker_threads = 10
 
   onlyfiles = [f for f in os.listdir(dir_path) if os.path.isfile(os.path.join(dir_path, f))]
 
