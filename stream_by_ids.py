@@ -21,7 +21,7 @@ def db_worker():
       insert_to_db(data)
       logging.debug("inserted tweet {} out of apx {}".format(data['id'], db_task_pool.qsize()))
     except Exception as e:
-      logging.error("error insert to db got {}".format(tweet, e))
+      logging.error("error insert tweet {} to db got {}".format(tweet, e))
     db_task_pool.task_done()
 
 
