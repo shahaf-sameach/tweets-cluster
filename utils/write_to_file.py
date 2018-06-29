@@ -55,7 +55,12 @@ if __name__ == '__main__':
   print res_q.qsize()
 
   print "took %s sec" %(t1 -t0)
+  print "writing to file..."
 
   with open(dir_path + 'tweets_ids.txt', 'a') as f:
     while not res_q.empty():
       f.write(res_q.get() + '\n')
+
+  t2 = time()
+  print "took %s sec" % (t2 - t1)
+  print "done"
