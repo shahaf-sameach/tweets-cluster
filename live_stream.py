@@ -5,62 +5,61 @@ from TwitterSearch import TwitterSearch, TwitterSearchOrder, TwitterSearchExcept
 from database.query import Database
 from settings import TwitterSettings
 
+
 def main():
-  logger = logging.getLogger(__name__)
-  logger.setLevel(logging.DEBUG)
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
-  ch = logging.StreamHandler()
-  formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-  ch.setFormatter(formatter)
-  
-  logger.addHandler(ch)
+    ch = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
 
-  user = TwitterSettings.all_users[0]
+    logger.addHandler(ch)
 
-  consumer_key = user.consumer_key
-  consumer_secret = user.consumer_secret
-  access_token = user.access_key
-  access_token_secret = user.access_secret
+    user = TwitterSettings.all_users[0]
 
-  tso = TwitterSearchOrder()
-  tso.set_keywords(['.'])
-  tso.set_language('en')
+    consumer_key = user.consumer_key
+    consumer_secret = user.consumer_secret
+    access_token = user.access_key
+    access_token_secret = user.access_secret
 
-  sleep_for = 10
-  last_amount_of_queries = 0
+    tso = TwitterSearchOrder()
+    tso.set_keywords(['.'])
+    tso.set_language('en')
 
-  ts = TwitterSearch(consumer_key=consumer_key, consumer_secret=consumer_secret,
-                     access_token=access_token, access_token_secret=access_token_secret)
+    sleep_for = 10
+    last_amount_of_queries = 0
 
-  db = Database()
+    ts = TwitterSearch(consumer_key=consumer_key, consumer_secret=consumer_secret,
+                       access_token=access_token, access_token_secret=access_token_secret)
 
-  while True:
-    try:
-      # Get the next batch of tweets
-      for tweet in ts.search_tweets_iterable(tso):
+    db = Database()
+
+    while True:
         try:
-          db.insert_tweet(tweet)
-          logger.debug(u"inserted tweet {} to db".format(tweet['id']))
+            logging.debug("getting next batch")
+            for tweet in ts.search_tweets_iterable(tso):
+                try:
+                    db.insert_tweet(tweet)
+                    logger.debug(u"inserted tweet {} to db".format(tweet['id']))
+                except Exception as e:
+                    logger.error(u"error inserting tweet {} to database: {}".format(tweet['id'], e))
+
+                current_amount_of_queries = ts.get_statistics()[0]
+
+                # Handle API rate limit
+                if not last_amount_of_queries == current_amount_of_queries:
+                    last_amount_of_queries = current_amount_of_queries
+                    logger.debug("sleeping for %s min" % sleep_for)
+                    time.sleep(sleep_for)
+
+        except TwitterSearchException:
+            logger.debug("Timeout! waiting... ")
+            time.sleep(sleep_for)
+
         except Exception as e:
-          logger.error(u"error inserting tweet {} to database: {}".format(tweet['id'], e))
-
-        current_amount_of_queries = ts.get_statistics()[0]
-
-        # Handle API rate limit
-        if not last_amount_of_queries == current_amount_of_queries:
-          last_amount_of_queries = current_amount_of_queries
-          time.sleep(sleep_for)
-    
-    except TwitterSearchException:
-      logger.debug("Timeout! waiting... ")
-      time.sleep(sleep_for)
-    
-    except Exception as e:
-      logger.error(u"Error: {}".format(e))
+            logger.error(u"Error: {}".format(e))
 
 
 if __name__ == '__main__':
-  main()
-
-
-
+    main()
