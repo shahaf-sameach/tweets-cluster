@@ -1,7 +1,11 @@
+import json
+
 from pymongo import MongoClient
 from settings import MongoSettings
 from dateutil.parser import parse
 import datetime
+
+from utils.converter import custom_converter
 
 
 class Database(object):
@@ -70,8 +74,12 @@ class Database(object):
 if __name__ == '__main__':
     print("start...")
     db = Database()
-    t = db.get_tweets_by_date(from_date=datetime.datetime(2017, 3, 21), to=2)
-    dates = set([d for d in t["created_at_date"]])
-    print(len(t))
-    print(dates)
+    for d in ["20170328" , "20170406" , "20170407", "20170417", "20170524", "20170809", "20170813", "20170818", "20170825", "20170827", "20170910"]:
+        date = datetime.datetime.strptime(d,"%Y%m%d")
+        print("querying for %s" % date)
+        tweets = db.get_tweets_by_date(from_date=date, to=1)
+        file_name = date.strftime("%Y_%m_%d.json")
+        with open(file_name, 'w') as outfile:
+            json.dump(tweets, outfile, default=custom_converter)
+        print("wrote %s to %s" %(len(tweets), file_name))
     print "done"

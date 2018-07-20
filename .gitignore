@@ -4,6 +4,7 @@
 
 # python related files
 *.pyc
+draft.py
 
 # app related files
 /logs/*

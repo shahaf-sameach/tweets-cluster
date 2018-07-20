@@ -7,6 +7,8 @@ import random
 from time_wrapper import timewrapper
 import json
 
+from utils.converter import custom_converter
+
 
 def get_from_binary_file(tweets_num=100):
     cur_dir = os.path.dirname(__file__) or '.'
@@ -53,9 +55,6 @@ def write_clusters_to_files(labels, tweets, prefix="cluster"):
             tweets = [d[1] for d in filter(lambda i:i[0] == cluster, data)]
             json.dump(tweets, f, default=custom_converter)
 
-def custom_converter(o):
-    if isinstance(o, datetime.datetime):
-        return o.__str__()
 
 
 if __name__ == "__main__":
@@ -64,4 +63,4 @@ if __name__ == "__main__":
     t = c[0]
 
     with open("file.txt", 'w') as f:
-        json.dump(t,f, default=json_util.default)
+        json.dump(t,f, default=custom_converter)
