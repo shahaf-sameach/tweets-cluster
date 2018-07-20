@@ -50,7 +50,6 @@ def main():
                 # Handle API rate limit
                 if not last_amount_of_queries == current_amount_of_queries:
                     last_amount_of_queries = current_amount_of_queries
-                    logger.debug("sleeping for %s min" % sleep_for)
                     time.sleep(sleep_for)
 
         except TwitterSearchException:
