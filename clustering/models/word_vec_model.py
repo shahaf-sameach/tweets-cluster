@@ -3,7 +3,7 @@ import numpy as np
 from gensim.models import Word2Vec
 from sklearn.cluster import KMeans
 
-from utils.stuff import get_tweets_by_hashtags_clusters, write_clusters_to_files
+from utils.files import get_tweets_by_hashtags_clusters, write_clusters_to_files
 from tf_idf_model import process_text
 
 from nltk.corpus import brown
@@ -11,14 +11,15 @@ from nltk.corpus import brown
 
 class Word2VecModel(object):
 
-    def __init__(self, sentences):
-        corpus = [process_text(t) for t in sentences] + brown.sents()
-        self.model = Word2Vec(corpus)
+    def __init__(self):
+        pass
 
-    def build(self, sentences):
-        return [self.vec(sentence) for sentence in sentences]
+    def build(self, tweets):
+        self.__train(tweets)
 
-    def vec(self, sentence):
+        return [self.__vec(sentence) for sentence in self.sentences]
+
+    def __vec(self, sentence):
         m = np.zeros(self.model.vector_size)
         for word in sentence:
             try:
@@ -35,6 +36,12 @@ class Word2VecModel(object):
     def save(self, file_name):
         self.model.save(file_name)
 
+    def __train(self, tweets):
+        self.sentences = [t['text'] for t in tweets]
+
+        corpus = [process_text(t) for t in self.sentences] + brown.sents()
+        self.model = Word2Vec(corpus)
+
 if __name__ == '__main__':
     n_clusters = 3
     data = get_tweets_by_hashtags_clusters(n_clusters)
@@ -45,17 +52,16 @@ if __name__ == '__main__':
 
     tweets_sentences = [t['text'] for t in tweets]
 
-    model = Word2VecModel(tweets_sentences)
-    X = model.build(tweets_sentences)
+    model = Word2VecModel()
+    X = model.build(tweets)
 
     # Number of clusters
     kmeans = KMeans(n_clusters=n_clusters)
     # Fitting the input data
-    kmeans = kmeans.fit(X)
-    # Getting the cluster labels
-    labels = kmeans.predict(X)
-    print(labels)
+    kmeans.fit(X)
+
+    print(kmeans.labels_)
     print(true_labels)
-    write_clusters_to_files(labels, tweets)
+    #write_clusters_to_files(kmeans.labels_, tweets)
     print('----')
 

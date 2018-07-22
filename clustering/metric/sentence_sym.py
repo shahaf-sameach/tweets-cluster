@@ -77,7 +77,7 @@ def length_dist(synset_1, synset_2):
 @timewrapper
 def hierarchy_dist(synset_1, synset_2):
     """
-    Return a measure of depth in the ontology to cluster the fact that
+    Return a measure of depth in the ontology to clustering the fact that
     nodes closer to the root are broader and have less semantic similarity
     than nodes further away from the root.
     """
@@ -252,6 +252,16 @@ def similarity(sentence_1, sentence_2, info_content_norm=True):
     return DELTA * semantic_similarity(sentence_1, sentence_2, info_content_norm) + \
         (1.0 - DELTA) * word_order_similarity(sentence_1, sentence_2)
 
+
+def symmetric_sentence_similarity(sentence_1, sentence_2, info_content_norm=True):
+    return (similarity(sentence_1, sentence_2, info_content_norm) + \
+        similarity(sentence_2, sentence_1, info_content_norm)) / 2.0
+
+
+def sentence_distance(sentence1, sentence2, info_content_norm=True):
+    return 1.0 / symmetric_sentence_similarity(sentence1, sentence2, info_content_norm)
+
+
 ######################### main / test ##########################      
 if __name__ == '__main__':     
   # the results of the algorithm are largely dependent on the results of 
@@ -311,6 +321,6 @@ if __name__ == '__main__':
       ["I have a hammer.", "Take some apples.", 0.121]
   ]
   for sent_pair in sentence_pairs:
-      print "%s\t%s\t%.3f\t%.3f\t%.3f" % (sent_pair[0], sent_pair[1], sent_pair[2], 
-          similarity(sent_pair[0], sent_pair[1], False),
-          similarity(sent_pair[0], sent_pair[1], True))
+      print "%s\t%s\t%.3f\t%.3f\t%.3f" % (sent_pair[0], sent_pair[1], sent_pair[2],
+          sentence_distance(sent_pair[0], sent_pair[1], True),
+          sentence_distance(sent_pair[1], sent_pair[0], True))

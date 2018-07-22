@@ -171,7 +171,7 @@ class TwitterSearch(object):
 
     def check_http_status(self, http_status):
         """ Checks if given HTTP status code is within the list at \
-         ``TwitterSearch.exceptions`` and raises a ``TwitterSearchException`` \
+         ``twitter_search.exceptions`` and raises a ``TwitterSearchException`` \
          if this is the case. Example usage: ``checkHTTPStatus(200)`` and \
          ``checkHTTPStatus(401)``
 
@@ -353,7 +353,7 @@ class TwitterSearch(object):
         """ Returns dict with statistical information about \
         amount of queries and received tweets. Returns statistical values \
         about the number of queries and the sum of all tweets received by \
-        this very instance of :class:`TwitterSearch`. \
+        this very instance of :class:`twitter_search`. \
         Example usage: ``print("Queries done: %i. Tweets received: %i"
         % ts.get_statistics())``
 

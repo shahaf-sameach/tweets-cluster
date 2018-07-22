@@ -74,7 +74,7 @@ class Database(object):
 if __name__ == '__main__':
     print("start...")
     db = Database()
-    for d in ["20170328" , "20170406" , "20170407", "20170417", "20170524", "20170809", "20170813", "20170818", "20170825", "20170827", "20170910"]:
+    for d in ["20170321"]:
         date = datetime.datetime.strptime(d,"%Y%m%d")
         print("querying for %s" % date)
         tweets = db.get_tweets_by_date(from_date=date, to=1)

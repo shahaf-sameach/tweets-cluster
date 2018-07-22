@@ -1,7 +1,6 @@
 import time
 import logging
-import json
-from TwitterSearch import TwitterSearch, TwitterSearchOrder, TwitterSearchException
+from stream.twitter_search import TwitterSearch, TwitterSearchOrder, TwitterSearchException
 from database.query import Database
 from settings import TwitterSettings
 

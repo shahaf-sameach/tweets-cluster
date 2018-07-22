@@ -4,12 +4,12 @@
 class TwitterSearchException(Exception):
     """
     This class is all about exceptions (surprise, surprise!).
-    All exception based directly on TwitterSearch will consist of
+    All exception based directly on twitter_search will consist of
     a **code** and a **message** describing the reason of the
     exception shortly.
     """
 
-    # HTTP status codes are stored in TwitterSearch.exceptions due
+    # HTTP status codes are stored in twitter_search.exceptions due
     # to possible on-the-fly modifications
     _error_codes = {
         1000: 'Neither a list nor a string',

@@ -43,7 +43,7 @@ def get_tweets_by_hashtags_clusters(clusters_num = 7):
     return [(i,t) for i, c in enumerate(clusters) for t in c]
 
 
-def write_clusters_to_files(labels, tweets, prefix="cluster"):
+def write_clusters_to_files(labels, tweets, prefix="clustering"):
     cur_dir = os.path.dirname(__file__) or '.'
     dir_path = os.path.join(cur_dir, "../output/")
 
@@ -55,6 +55,25 @@ def write_clusters_to_files(labels, tweets, prefix="cluster"):
             tweets = [d[1] for d in filter(lambda i:i[0] == cluster, data)]
             json.dump(tweets, f, default=custom_converter)
 
+
+def get_tweets_from_file(file_name):
+    cur_dir = os.path.dirname(__file__) or '.'
+    dir_path = os.path.join(cur_dir, "../files/tweets/")
+
+    with open(dir_path + file_name, 'r') as f:
+        tweets = json.load(f)
+
+    return tweets
+
+
+def get_ground_truth(file_name):
+    cur_dir = os.path.dirname(__file__) or '.'
+    dir_path = os.path.join(cur_dir, "../files/tweets/ground_truth/")
+
+    with open(dir_path + file_name, 'r') as f:
+        tweets_ids = json.load(f)
+
+    return tweets_ids
 
 
 if __name__ == "__main__":

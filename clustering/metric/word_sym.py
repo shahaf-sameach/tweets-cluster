@@ -1,7 +1,6 @@
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
 
-
 def penn_to_wn(tag):
     """ Convert between a Penn Treebank tag to a simplified Wordnet tag """
     if tag.startswith('N'):

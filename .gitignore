@@ -10,12 +10,7 @@ draft.py
 /logs/*
 /files/*
 local_settings.py
-
 /output/*
-
 tweets.p
-
-ids_stream_watchdog.sh
-live_stream_watchdog.sh
 *.log
 /pids/*

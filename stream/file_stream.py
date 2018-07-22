@@ -5,7 +5,7 @@ import os
 from time import sleep
 
 from settings import TwitterSettings
-from api.twitter_api import Twitter
+from stream.api import Twitter
 from database.query import Database
 
 

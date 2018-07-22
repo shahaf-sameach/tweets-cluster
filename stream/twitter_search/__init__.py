@@ -1,4 +1,4 @@
-__title__ = 'TwitterSearch'
+__title__ = 'twitter_search'
 __version__ = '1.0.1'
 __author__ = 'Christian Koepp'
 __license__ = 'MIT'
