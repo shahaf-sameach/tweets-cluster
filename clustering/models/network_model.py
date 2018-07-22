@@ -65,10 +65,12 @@ print("adding adges to graph...")
 g.add_edges_from(edges)
 
 print(nx.info(g))
-
-print("drawing...")
-sp = nx.spring_layout(g)
-print("----")
-nx.draw_networkx(g, with_labels=False)
-import matplotlib.pyplot as plt
-plt.show()
+nx.write_edgelist(g, "graph.txt")
+print("done")
+#
+# print("drawing...")
+# sp = nx.spring_layout(g)
+# print("----")
+# nx.draw_networkx(g, with_labels=False)
+# import matplotlib.pyplot as plt
+# plt.show()
