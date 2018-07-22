@@ -1,7 +1,30 @@
-import random
 import networkx as nx
 
-from utils.files import get_tweets_from_file
+
+class NetworkModel(object):
+
+    def __init__(self):
+        self.g = nx.Graph()
+
+
+    def build(self, tweets):
+        self.g.add_nodes_from([t['id'] for t in tweets])
+        self.g.add_edges_from(self.__get_edges(tweets))
+
+        return self.g
+
+
+    def __get_edges(self, tweets):
+        edges = set()
+        for i, _ in enumerate(tweets):
+            print("working on tweet {}/{}".format(i, len(tweets)))
+            for j in xrange(i, len(tweets)):
+                if (tweets[i]['id'], tweets[j]['id']) not in edges and (tweets[j]['id'], tweets[i]['id']):
+                    if any_edge(tweets[i], tweets[j]):
+                        edges.add((tweets[i]['id'], tweets[j]['id']))
+
+        return edges
+
 
 
 def reply_id_edge(tweet1, tweet2):
@@ -40,37 +63,3 @@ def any_edge(tweet1, tweet2):
         if method(tweet1, tweet2):
             return True
     return False
-
-
-
-print("loading data...")
-tweets = get_tweets_from_file("2017_03_28.json")[:100]
-
-
-print("adding nodes to graph...")
-g = nx.Graph()
-g.add_nodes_from([t['id'] for t in tweets])
-
-print("building edge sets...")
-edges = set()
-for i, _ in enumerate(tweets):
-    print("working on tweet {}/{}".format(i, len(tweets)))
-    for j in xrange(i, len(tweets)):
-        if (tweets[i]['id'], tweets[j]['id']) not in edges and (tweets[j]['id'], tweets[i]['id']):
-            if any_edge(tweets[i], tweets[j]):
-                edges.add((tweets[i]['id'], tweets[j]['id']))
-
-
-print("adding adges to graph...")
-g.add_edges_from(edges)
-
-print(nx.info(g))
-nx.write_edgelist(g, "graph.txt")
-print("done")
-#
-# print("drawing...")
-# sp = nx.spring_layout(g)
-# print("----")
-# nx.draw_networkx(g, with_labels=False)
-# import matplotlib.pyplot as plt
-# plt.show()

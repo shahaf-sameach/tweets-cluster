@@ -5,9 +5,8 @@ import os
 from time import sleep
 
 from settings import TwitterSettings
-from stream.api import Twitter
 from database.query import Database
-
+from stream.api.twitter_api import Twitter
 
 download_task_pool = Queue.Queue()
 db_task_pool = Queue.Queue()

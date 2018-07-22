@@ -1,7 +1,7 @@
 #!/bin/bash
 
-mkdir -p "/home/ir/sameacs/tweets-clustering/pids"
-PIDFILE="/home/ir/sameacs/tweets-clustering/pids/live_stream.pid"
+mkdir -p "/home/ir/sameacs/tweets-cluster/pids"
+PIDFILE="/home/ir/sameacs/tweets-cluster/pids/live_stream.pid"
 
 if [ -e "${PIDFILE}" ] && (ps -u $(whoami) -opid= |
                            grep -P "^\s*$(cat ${PIDFILE})$" &> /dev/null); then
