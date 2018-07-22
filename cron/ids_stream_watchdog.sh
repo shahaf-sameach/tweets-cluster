@@ -11,6 +11,7 @@ fi
 
 echo "Starting Stream by ids..."
 source /home/ir/sameacs/.venv/bin/activate
+export PYTHONPATH=/home/ir/sameacs/tweets-cluster
 python /home/ir/sameacs/tweets-cluster/stream/file_stream.py >> /home/ir/sameacs/tweets-cluster/logs/file_stream.log 2>&1 &
 
 echo $! > "${PIDFILE}"

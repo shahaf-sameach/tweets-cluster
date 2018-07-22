@@ -1,8 +1,9 @@
 import time
 import logging
+
+from settings import TwitterSettings
 from stream.twitter_search import TwitterSearch, TwitterSearchOrder, TwitterSearchException
 from database.query import Database
-from settings import TwitterSettings
 
 
 def main():
