@@ -1,3 +1,9 @@
+"""
+network model of tweets as tweets_ids are nodes and edges are relations
+"""
+
+from collections import defaultdict
+
 import networkx as nx
 
 
@@ -6,60 +12,49 @@ class NetworkModel(object):
     def __init__(self):
         self.g = nx.Graph()
 
-
     def build(self, tweets):
-        self.g.add_nodes_from([t['id'] for t in tweets])
-        self.g.add_edges_from(self.__get_edges(tweets))
+        self.tweets = tweets
+        self.g.add_nodes_from([t['id'] for t in self.tweets])
+        self.g.add_edges_from(self.__get_edges())
 
         return self.g
 
-
-    def __get_edges(self, tweets):
+    def __get_edges(self):
         edges = set()
-        for i, _ in enumerate(tweets):
-            print("working on tweet {}/{}".format(i, len(tweets)))
-            for j in xrange(i, len(tweets)):
-                if (tweets[i]['id'], tweets[j]['id']) not in edges and (tweets[j]['id'], tweets[i]['id']):
-                    if any_edge(tweets[i], tweets[j]):
-                        edges.add((tweets[i]['id'], tweets[j]['id']))
+        edges.update(self.__reply_id_edge())
+        edges.update(self.__hastags_edges())
+
+        return edges
+
+    def __reply_id_edge(self):
+        """ return all edges (tweet1, tweet2): tweet1 -> reply -> tweet2"""
+        edges = set()
+
+        reply_dict = defaultdict(list)
+        for t in self.tweets:
+            reply_dict[t['in_reply_to_status_id']].append(t['id'])
+
+        for k, v in reply_dict.iteritems():
+            for t_id in v:
+                edges.add((k, t_id))
 
         return edges
 
 
+    def __hastags_edges(self):
+        """ return all edges (tweet1, tweet2): tweets share hashtag"""
+        edges = set()
 
-def reply_id_edge(tweet1, tweet2):
-    if tweet1['in_reply_to_status_id'] == tweet2['id'] or \
-        tweet2['in_reply_to_status_id'] == tweet1['id']:
-        return True
+        hastags_dict = defaultdict(list)
+        for i, t in enumerate(self.tweets):
+            for h in t['entities']['hashtags']:
+                hastags_dict[h['text']].append(t['id'])
 
-    return False
+        for k, v in hastags_dict.iteritems():
+            g = nx.complete_graph(v)
+            edges.update(set(g.edges))
 
-def reply_user_edge(tweet1, tweet2):
-    if tweet1['user']['id'] == tweet2['in_reply_to_user_id'] or \
-        tweet2['user']['id'] == tweet1['in_reply_to_user_id']:
-        return True
-
-    return False
+        return edges
 
 
-def user_mention_edge(tweet1, tweet2):
-    if tweet1['user']['id'] in [i['id'] for i in tweet2['entities']['user_mentions']] or \
-            tweet2['user']['id'] in [i['id'] for i in tweet1['entities']['user_mentions']]:
-        return True
-
-    return False
-
-def hastags_edge(tweet1, tweet2):
-    set1 = set([i['text'] for i in tweet1['entities']['hashtags']])
-    set2 = set([i['text'] for i in tweet2['entities']['hashtags']])
-
-    if len(set1.intersection(set2)) > 0:
-        return True
-
-    return False
-
-def any_edge(tweet1, tweet2):
-    for method in [reply_id_edge, reply_user_edge, user_mention_edge, hastags_edge]:
-        if method(tweet1, tweet2):
-            return True
-    return False
+# NetworkModel().build(tweets)

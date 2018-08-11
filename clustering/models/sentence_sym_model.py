@@ -1,8 +1,8 @@
 import numpy as np
 from time import time
 
-from clustering.metric.word_sym import symmetric_sentence_similarity
-from utils.files import get_from_binary_file
+from clustering.similarity.word_sym import symmetric_sentence_similarity
+from utils.files import get_tweets_from_file
 from utils.text_proccesing import process_text
 
 
@@ -12,6 +12,7 @@ class SentenceSymModel(object):
         pass
 
     def build(self, tweets, method=symmetric_sentence_similarity):
+        """ returns sym matrix based sym method"""
         sentences = [process_text(t['text']) for t in tweets]
 
         data_len = len(sentences)
@@ -28,17 +29,4 @@ class SentenceSymModel(object):
         return m
 
 
-if __name__ == "__main__":
-    t0 = time()
-
-    tweets = get_from_binary_file()[:30]
-    t1 = time()
-    print  "loading took {}".format(t1 - t0)
-    model = SentenceSymModel()
-    dist_matrix = model.build(tweets)
-    print dist_matrix
-    t2 = time()
-    print "calc matrix took {}".format(t2 - t1)
-
-    # sents = np.array([[t['text']] for t in tweets])
-    # d = distance.cdist(sents, sents, lambda u, v : sentence_distance(u[0],v[0]))
+# SentenceSymModel().build(tweets)

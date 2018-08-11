@@ -307,10 +307,10 @@ class TwitterSearchOrder(TwitterOrder):
         :param latitude: A integer or long describing the latitude
         :param longitude: A integer or long describing the longitude
         :param radius: A integer or long describing the radius
-        :param imperial_metric: Whether the radius is given in metric \
+        :param imperial_metric: Whether the radius is given in similarity \
         (kilometers) or imperial (miles) system. \
         Default is ``True`` which relates to usage of the \
-        imperial kilometer metric
+        imperial kilometer similarity
         :raises: TwitterSearchException
 
         """
