@@ -1,3 +1,4 @@
+import random
 import time
 import logging
 
@@ -6,7 +7,7 @@ from stream.twitter_search import TwitterSearch, TwitterSearchOrder, TwitterSear
 from database.query import Database
 
 
-def main():
+if __name__ == '__main__':
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.DEBUG)
 
@@ -16,13 +17,15 @@ def main():
 
     logger.addHandler(ch)
 
-    user = TwitterSettings.all_users[0]
+    # getting random user
+    user = random.sample(population=TwitterSettings.all_users, k=1)
 
     consumer_key = user.consumer_key
     consumer_secret = user.consumer_secret
     access_token = user.access_key
     access_token_secret = user.access_secret
 
+    # building TwitterSearchOrder object
     tso = TwitterSearchOrder()
     tso.set_keywords(['.'])
     tso.set_language('en')
@@ -35,6 +38,7 @@ def main():
 
     db = Database()
 
+    # downloading tweets
     while True:
         try:
             logging.debug("getting next batch")
@@ -60,5 +64,3 @@ def main():
             logger.error(u"Error: {}".format(e))
 
 
-if __name__ == '__main__':
-    main()
