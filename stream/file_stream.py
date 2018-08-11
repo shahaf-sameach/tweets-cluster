@@ -88,10 +88,10 @@ if __name__ == "__main__" :
             tweets_to_download.append(line.strip())
 
     # getting all tweets downloaded from the db
-    tweets_2xx = set([str(t) for t in Database().get_all_tweets_ids()])
+    tweets_2xx = set([str(t) for t in Database().get_all_ids()])
     logging.debug("got {} tweets from 2xx collection".format(len(tweets_2xx)))
 
-    tweets_4xx = set([str(t) for t in Database().get_all_4xx_tweets_ids()])
+    tweets_4xx = set([str(t) for t in Database().get_all_4xx_ids()])
     logging.debug("got {} tweets from 4xx collection".format(len(tweets_4xx)))
 
 

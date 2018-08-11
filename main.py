@@ -11,7 +11,7 @@ if __name__ == "__main__":
 
     # tweets = get_tweets_from_file("2017_03_28.json")
     print("getting tweets from db...")
-    tweets = Database().get_tweets_by_date(from_date=datetime.datetime(2018, 3,21), to=1)
+    tweets = Database().get_by_date(from_date=datetime.datetime(2018, 3, 21), to=1)
 
     print("building model...")
     tf_idf_model = TfIdfModel()

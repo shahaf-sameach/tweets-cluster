@@ -12,3 +12,7 @@ the script will read the ids from the file (each id in separate line) download t
 
 both api calls uses a [TwitterSearch](https://github.com/ckoepp/TwitterSearch) <br>
 the method `create_search_url@TwitterSearchOrder.py` was modified to return only tweets with the following criteria `filter=news&tweet_mode=extended`
+
+### DataBase ###
+the database is MongoDB type, all interaction is done by `Database` class `@ query.py`
+connection settings should be at `local_settings.py`
