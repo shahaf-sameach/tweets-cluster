@@ -16,3 +16,5 @@ k_communities = itertools.takewhile(lambda c: len(c) <= k, communities_generator
 for communities in k_communities:
     print(tuple(sorted(c) for c in communities))
 
+
+

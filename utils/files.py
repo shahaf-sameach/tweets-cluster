@@ -1,25 +1,29 @@
 import os
 import json
+import re
 
 from utils.converter import custom_converter
 
 
-def write_clusters_to_files(labels, tweets, prefix="clustering"):
+def write_clusters_to_files(clusters, header=None, prefix="clusters"):
     """write clusters to file
-       input: labels - ordered array of labels e.g [0,1,1,2,0,2,....]
-              tweets - ordered array of tweets e.g [tweet0, tweet1...]
+       input: clusters - tuple of tuples e.g ((tweet0, tweet1,(tweet2...)...)
        output: a new file under /output folder"""
 
     cur_dir = os.path.dirname(__file__) or '.'
     dir_path = os.path.join(cur_dir, "../output/")
 
-    data = zip(labels, tweets)
+    file_name = "{}{}_{}.txt".format(dir_path, prefix, len(clusters))
+    with open(file_name, 'w') as f:
+        if header != None:
+            f.write("{}\n\n".format(header))
 
-    for cluster in range(min(labels), max(labels) + 1):
-        file_name = "{}{}_{}.txt".format(dir_path, prefix, cluster)
-        with open(file_name, 'w') as f:
-            tweets = [d[1] for d in filter(lambda i: i[0] == cluster, data)]
-            json.dump(tweets, f, default=custom_converter)
+        for cluster in clusters:
+            for tweet in cluster:
+                f.write("[{}] - {}\n".format(tweet.id, format_tweet_text(tweet.text)))
+            f.write("\n\n\n")
+        f.write("\n")
+
 
 
 def get_tweets_from_file(file_name):
@@ -42,3 +46,7 @@ def get_ground_truth(file_name):
         tweets_ids = json.load(f)
 
     return tweets_ids
+
+
+def format_tweet_text(text):
+    return re.sub('\s+', ' ', text.encode('utf-8')).strip()

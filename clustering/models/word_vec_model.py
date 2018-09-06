@@ -16,8 +16,8 @@ class Word2VecModel(object):
     def __init__(self):
         pass
 
-    def build(self, tweets):
-        self.__train(tweets)
+    def build(self, Tweets):
+        self.__train(Tweets)
 
         return [self.__vec(sentence) for sentence in self.sentences]
 
@@ -43,7 +43,7 @@ class Word2VecModel(object):
 
     def __train(self, tweets):
         """ train net """
-        self.sentences = [t['text'] for t in tweets]
+        self.sentences = [t.text for t in tweets]
 
         corpus = [process_text(t) for t in self.sentences] + brown.sents()
         self.model = Word2Vec(corpus)

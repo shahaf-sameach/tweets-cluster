@@ -9,9 +9,9 @@ class TfIdfModel(object):
     def __init__(self):
         pass
 
-    def build(self, tweets):
+    def build(self, Tweets):
         """ Transform texts to Tf-Idf coordinates """
-        text = [t['text'] for t in tweets]
+        text = [t.text for t in Tweets]
         vectorizer = TfidfVectorizer(tokenizer=process_text,
                                      stop_words=stopwords.words('english'),
                                      max_df=0.5,

@@ -11,9 +11,9 @@ class SentenceSymModel(object):
     def __init__(self):
         pass
 
-    def build(self, tweets, method=symmetric_sentence_similarity):
+    def build(self, Tweets, method=symmetric_sentence_similarity):
         """ returns sym matrix based sym method"""
-        sentences = [process_text(t['text']) for t in tweets]
+        sentences = [process_text(t.text) for t in Tweets]
 
         data_len = len(sentences)
 

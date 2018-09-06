@@ -163,7 +163,8 @@ def similarity(sentence1, sentence2):
 
     return float(set_len) / len(cluster.get_sets())
 
-def symmetric_sentence_similarity(sentence_1, sentence_2):
+def sentence_distance(sentence_1, sentence_2):
+    sentence_1, sentence_2  = sentence_1.split(), sentence_2.split()
     return (similarity(sentence_1, sentence_2) + similarity(sentence_2, sentence_1)) / 2.0
 
 
@@ -171,5 +172,5 @@ if __name__ == "__main__":
     sent1 = ["the", "dog", "is", "back"]
     sent2 = ["the", "cat", "glow", "up", "tree"]
 
-    print(symmetric_sentence_similarity(sent1, sent2))
-    print(symmetric_sentence_similarity(sent2, sent1))
+    print(sentence_distance(sent1, sent2))
+    print(sentence_distance(sent2, sent1))

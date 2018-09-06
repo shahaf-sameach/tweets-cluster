@@ -1,16 +1,17 @@
-# ide related files
+### IDE Related ###
 .idea
 .DS_Store
 
-# python related files
+### Python Related ###
 *.pyc
-draft.py
 
-# app related files
+### App Related ###
 /logs/*
 /files/*
-local_settings.py
 /output/*
-tweets.p
-*.log
 /pids/*
+
+*.log
+local_settings.py
+tweets.p
+draft.py
