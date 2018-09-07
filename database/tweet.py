@@ -6,7 +6,8 @@ TWEET_ATTR = ['text',
               'entities',
               'in_reply_to_user_id',
               'user',
-              'created_at']
+              'created_at',
+              'in_reply_to_status_id']
 
 Tweet = dnamedtuple('Tweet', TWEET_ATTR)
 

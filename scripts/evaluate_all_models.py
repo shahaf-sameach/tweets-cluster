@@ -4,7 +4,11 @@ from scipy.spatial import distance_matrix
 
 from sklearn.cluster import KMeans, AffinityPropagation, DBSCAN, AgglomerativeClustering
 
-# from clustering.examples.markov_cluster import MarkovCluster
+from clustering.network.community_clustering import CommunityCluster
+from clustering.network.markov_cluster import MarkovCluster
+from clustering.network.prime_clustering import PrimCluster
+
+from clustering.models.network_model import NetworkModel
 from clustering.models.sentence_sym_model import SentenceSymModel
 from clustering.models.tf_idf_model import TfIdfModel
 from clustering.models.word_vec_model import Word2VecModel
@@ -25,6 +29,10 @@ af = AffinityPropagation(affinity='precomputed')
 db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed")
 ag = AgglomerativeClustering(n_clusters=n_clusters)
 km = KMeans(n_clusters=n_clusters)
+
+mk = MarkovCluster()
+cm = CommunityCluster(n_clusters=n_clusters)
+pm = PrimCluster(n_clusters=n_clusters)
 
 file_list = list(map(lambda f: "2017_{}".format(f),
                      ["03_28", "04_06", "04_07", "04_17", "05_24", "08_09",
@@ -95,17 +103,36 @@ for symm_name, symm in zip(['word_sym', 'sentence_sym', 'ish_sym'],[word_sym, se
     print("\n")
 
 
+print("building network model...")
+t0 = time.time()
+network = NetworkModel().build(Tweets)
+print("took {} sec".format(time.time() - t0))
+print("fitting models:")
+for alg in [mk, cm, pm]:
+    print("\tfitting {} ...".format(alg.__class__.__name__))
+    t1 = time.time()
+    clusters = alg.fit(network)
+    name = "{}".format(alg.__class__.__name__ )
+    models.append({"name" : name, "fit" : clusters})
+    print("\ttook {:.3} sec".format(time.time() - t1))
+print("took {:.3} sec".format(time.time() - t0))
+print("\n")
 
 print("\n")
 for i, model in enumerate(models):
     print("evaluating model {} {}/{} ...".format(model['name'], i, len(models)))
     t0 = time.time()
-    fit = model['fit']
-    clusters = [[] for l in set(fit.labels_)]
-    for idx, t in enumerate(X_tweets):
-        clusters[fit.labels_[idx]].append(t)
+    y_pred = None
+    if model['name'] in ['MarkovCluster', 'CommunityCluster', 'PrimCluster']:
+        y_pred = model['fit']
+    else:
+        fit = model['fit']
+        clusters = [[] for l in set(fit.labels_)]
+        for idx, t in enumerate(X_tweets):
+            clusters[fit.labels_[idx]].append(t)
 
-    y_pred = [[t.id for t in c] for c in clusters]
+        y_pred = [[t.id for t in c] for c in clusters]
+
     purity_score = purity(y_true, y_pred)
     Rand_score = Rand(y_true, y_pred)
 

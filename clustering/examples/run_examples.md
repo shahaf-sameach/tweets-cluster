@@ -30,4 +30,19 @@ for all other clustered alg need to precompute the distance matrix
 `af = AffinityPropagation(preference=50, affinity='precomputed').fit(X)`<br>
 `db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit(X)`
 
+### Network Model
+build model<br>
+`network = NetworkModel().build(Tweets)`
+
+Markov<br>
+`MarkovCluster().fit(network)`
+
+Community<br>
+`CommunityCluster().fit(network)`
+
+Prim<br>
+`PrimCluster().fit(network)`
+
+
+
 
