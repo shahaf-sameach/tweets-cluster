@@ -11,7 +11,10 @@
 /output/*
 /pids/*
 
-*.log
 local_settings.py
 tweets.p
 draft.py
+
+### General Files ###
+*.log
+*.tar

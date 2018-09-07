@@ -1,6 +1,7 @@
 import random
 import time
 import logging
+import traceback
 
 from settings import TwitterSettings
 from stream.twitter_search import TwitterSearch, TwitterSearchOrder, TwitterSearchException
@@ -26,6 +27,7 @@ if __name__ == '__main__':
     access_token_secret = user.access_secret
 
     # building TwitterSearchOrder object
+    logging.debug("building TwitterSearchOrder object...")
     tso = TwitterSearchOrder()
     tso.set_keywords(['.'])
     tso.set_language('en')
@@ -62,5 +64,7 @@ if __name__ == '__main__':
 
         except Exception as e:
             logger.error(u"Error: {}".format(e))
+            logger.error(traceback.format_exc())
+
 
 
