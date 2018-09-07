@@ -78,7 +78,7 @@ if __name__ == "__main__" :
 
     # getting full path of working dir
     dir = os.path.dirname(__file__)
-    dir_path = os.path.join(dir, '../files/tweets/file_stream')
+    dir_path = os.path.join(dir, '../files/tweets/file_stream/')
 
     # reading tweets from file to array
     tweets_to_download = []

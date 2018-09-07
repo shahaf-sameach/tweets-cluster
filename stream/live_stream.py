@@ -19,7 +19,7 @@ if __name__ == '__main__':
     logger.addHandler(ch)
 
     # getting random user
-    user = random.sample(population=TwitterSettings.all_users, k=1)
+    user = random.sample(population=TwitterSettings.all_users, k=1)[0]
 
     consumer_key = user.consumer_key
     consumer_secret = user.consumer_secret

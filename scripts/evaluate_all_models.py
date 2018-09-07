@@ -43,20 +43,26 @@ for tweet_file in file_list:
     tweets.extend([TweetBuilder(t) for t in get_tweets_from_file("{}.json".format(tweet_file))])
     golden_standard_clusters.append(map(int, get_ground_truth("{}.json".format(tweet_file))))
 
+print("golden standart clusters size: {}".format([len(c) for c in golden_standard_clusters]))
+print("total tweets from files: {}".format(len(tweets)))
+
 golden_standard_ids = set([t_id for cluster in golden_standard_clusters for t_id in cluster])
 tweets_ids = set([t.id for t in tweets])
 intersection_ids = golden_standard_ids.intersection(tweets_ids)
+print("common ids: {}".format(len(intersection_ids)))
+
 y_true = [[t for t in c if t in intersection_ids] for c in golden_standard_clusters]
 other_ids = tweets_ids.difference(intersection_ids)
-random_tweets_ids = set(np.random.choice(list(other_ids), random_tweets_n, replace=False)).union(intersection_ids)
-random_tweets = [t for t in tweets if t.id in random_tweets_ids]
+X_tweets_ids = set(np.random.choice(list(other_ids), random_tweets_n, replace=False)).union(intersection_ids)
+X_tweets = [t for t in tweets if t.id in X_tweets_ids]
+print("running models on {} tweets".format(len(X_tweets)))
 
 
 models = []
 for model in [TfIdfModel(), Word2VecModel()]:
     print("building {} model...".format(model.__class__.__name__))
     t0 = time.time()
-    X = model.build(random_tweets)
+    X = model.build(X_tweets)
     print("took {} sec".format(time.time() - t0))
     for alg in (km, af, db, ag):
         print("\tfitting {} ...".format(alg.__class__.__name__))
@@ -74,7 +80,7 @@ for model in [TfIdfModel(), Word2VecModel()]:
 for symm in [word_sym, sentence_sym, ish_sym]:
     print("building SentenceSymModel model with {} ...".format(symm.__name__))
     t0 = time.time()
-    X = SentenceSymModel().build(tweets=random_tweets, method=symm)
+    X = SentenceSymModel().build(tweets=X_tweets, method=symm)
     print("took {} sec".format(time.time() - t0))
     for alg in (af, db, ag):
         print("\tfitting {} ...".format(alg.__class__.__name__))
@@ -94,7 +100,7 @@ for i, model in enumerate(models):
     t0 = time.time()
     fit = model['fit']
     clusters = [[] for l in set(fit.labels_)]
-    for idx, t in enumerate(random_tweets):
+    for idx, t in enumerate(X_tweets):
         clusters[fit.labels_[idx]].append(t)
 
     y_pred = [[t.id for t in c] for c in clusters]
