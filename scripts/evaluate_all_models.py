@@ -1,7 +1,7 @@
 import time
 from collections import namedtuple
 import numpy as np
-from scipy.spatial import distance
+from scipy.spatial import distance, distance_matrix
 
 from sklearn.cluster import KMeans, AffinityPropagation, DBSCAN, AgglomerativeClustering
 
@@ -70,8 +70,8 @@ for model in [TfIdfModel(), Word2VecModel()]:
     for alg in [km, af, db, ag]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
-        if alg != km:
-            X = distance.pdist(X.A)
+        if alg not in [km, af]:
+            X = distance_matrix(X,X)
         model_fit = alg.fit(X)
         name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)
         models.append({"name" : name, "fit" : model_fit})
