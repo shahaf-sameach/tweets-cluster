@@ -1,6 +1,5 @@
 import random
 import time
-from collections import namedtuple
 from scipy.spatial import distance_matrix
 
 from sklearn.cluster import KMeans, AffinityPropagation, DBSCAN, AgglomerativeClustering
@@ -10,9 +9,9 @@ from clustering.models.sentence_sym_model import SentenceSymModel
 from clustering.models.tf_idf_model import TfIdfModel
 from clustering.models.word_vec_model import Word2VecModel
 
-from clustering.similarity.word_sym import sentence_distance as word_sym
-from clustering.similarity.sentence_sym import sentence_distance as sentence_sym
-from clustering.similarity.ish import sentence_distance as ish_sym
+from clustering.similarity.word_sym import symmetric_sentence_similarity as word_sym
+from clustering.similarity.sentence_sym import symmetric_sentence_similarity as sentence_sym
+from clustering.similarity.ish import symmetric_sentence_similarity as ish_sym
 from utils.evaluate import purity, Rand
 
 from utils.files import get_tweets_from_file, get_ground_truth, write_clusters_to_files
@@ -27,25 +26,23 @@ db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed")
 ag = AgglomerativeClustering(n_clusters=n_clusters)
 km = KMeans(n_clusters=n_clusters)
 
-Model = namedtuple('Model', ['name', 'classification'])
-
 file_list = list(map(lambda f: "2017_{}".format(f),
                      ["03_28", "04_06", "04_07", "04_17", "05_24", "08_09",
                       "08_13", "08_18", "08_25", "08_27", "09_10"]))
 
 
-file_list = list(map(lambda f: "2017_{}".format(f), ["03_28", "04_06"]))
+file_list = file_list[:2]
 
 Tweets = []
 golden_standard_clusters = []
 print("loading data from {} files...".format(len(file_list)))
-t0 = time.time()
-for tweet_file in file_list:
-    print("\tloading {} data...".format(tweet_file))
+t00 = time.time()
+for idx, tweet_file in enumerate(file_list,1):
+    print("\tloading data from {} [{}/{}]...".format(tweet_file, idx, len(file_list)))
     Tweets.extend([TweetBuilder(t) for t in get_tweets_from_file("{}.json".format(tweet_file))])
     golden_standard_clusters.append(map(int, get_ground_truth("{}.json".format(tweet_file))))
 
-print("took {:.3} sec".format(time.time() - t0))
+print("took {:.3} sec".format(time.time() - t00))
 print("golden standart clusters size: {}".format([len(c) for c in golden_standard_clusters]))
 print("total tweets from files: {}".format(len(Tweets)))
 
@@ -67,6 +64,7 @@ for model in [TfIdfModel(), Word2VecModel()]:
     t0 = time.time()
     X = model.build(X_tweets)
     print("took {:.3} sec".format(time.time() - t0))
+    print("fitting models:")
     for alg in [km, ag, af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
@@ -80,16 +78,17 @@ for model in [TfIdfModel(), Word2VecModel()]:
     print("\n")
 
 
-for symm in [word_sym, sentence_sym, ish_sym]:
-    print("building SentenceSymModel model with {} ...".format(symm.__name__))
+for symm_name, symm in zip(['word_sym', 'sentence_sym', 'ish_sym'],[word_sym, sentence_sym, ish_sym]):
+    print("building SentenceSymModel model with {} ...".format(symm_name))
     t0 = time.time()
     X = SentenceSymModel().build(tweets=X_tweets, method=symm)
     print("took {:.3} sec".format(time.time() - t0))
+    print("fitting models:")
     for alg in [af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
         model_fit = alg.fit(X)
-        name = "{}_{}_{}".format(model_fit.__class__.__name__, SentenceSymModel().__class__.__name__, symm.__name__)
+        name = "{}_{}_{}".format(model_fit.__class__.__name__, SentenceSymModel().__class__.__name__, symm_name)
         models.append({"name": name, "fit": model_fit})
         print("\ttook {:.3} sec".format(time.time() - t1))
     print("took {:3.} sec".format(time.time() - t0))
@@ -117,7 +116,7 @@ for i, model in enumerate(models):
     print("took {:.3} sec".format(time.time() - t0))
     print("\n")
 
-print("took total of {:.3} sec".format(time.time() - t0))
+print("took total of {:.3} sec".format(time.time() - t00))
 print("done")
 
 

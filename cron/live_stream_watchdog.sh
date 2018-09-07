@@ -12,7 +12,7 @@ fi
 echo "$(date '+%d/%m/%Y %H:%M:%S') Starting Live Stream..."
 source /home/ir/sameacs/.venv/bin/activate
 export PYTHONPATH=/home/ir/sameacs/tweets-cluster
-python /home/ir/sameacs/tweets-cluster/stream/live_stream.py >> /home/ir/sameacs/tweets-cluster/logs/live_stream.log 2>&1 &
+python -u /home/ir/sameacs/tweets-cluster/stream/live_stream.py >> /home/ir/sameacs/tweets-cluster/logs/live_stream.log 2>&1 &
 
 echo $! > "${PIDFILE}"
 chmod 644 "${PIDFILE}"

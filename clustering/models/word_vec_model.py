@@ -31,11 +31,12 @@ class Word2VecModel(object):
             m = np.vstack((m, v))
         return np.average(m, axis=0)
 
-    def __train(self, tweets):
+    def __train(self, Tweets):
         """ train net """
-        self.sentences = [t.text for t in tweets]
+        self.sentences = [t.text for t in Tweets]
+        corpus = [s.split() for s in self.sentences]
+        corpus.extend(brown.sents())
 
-        corpus = [s.split() for s in self.sentences] + brown.sents()
         self.model = Word2Vec(corpus)
 
 

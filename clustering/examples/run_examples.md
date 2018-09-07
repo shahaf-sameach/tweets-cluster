@@ -9,7 +9,7 @@ build model using ish similarity<br>
 `X = SentenceSymModel().build(tweets=tweets, method=ish_symm)`
 
 
-`af = AffinityPropagation(preference=-50, affinity='precomputed').fit(X)`<br>
+`af = AffinityPropagation(preference=50, affinity='precomputed').fit(X)`<br>
 `db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit(X)`<br>
 `ward = AgglomerativeClustering(n_clusters=6, affinity="precomputed").fit(X)`<br>
 `km = KMeans(n_clusters=3).fit(X)`
@@ -27,8 +27,7 @@ build model using<br>
 for all other clustered alg need to precompute the distance matrix
 `X = scipy.spatial.distance_matrix(X,X)`
 
-`ward = AgglomerativeClustering(n_clusters=6, affinity="precomputed").fit(X)`<br>
-`af = AffinityPropagation(preference=-50, affinity='precomputed').fit(X)`<br>
+`af = AffinityPropagation(preference=50, affinity='precomputed').fit(X)`<br>
 `db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit(X)`
 
 

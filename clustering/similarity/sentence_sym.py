@@ -25,7 +25,7 @@ brown_freqs = dict()
 N = 0
 
 ######################### word similarity ##########################
-@timewrapper
+
 def get_best_synset_pair(word_1, word_2):
     """ 
     Choose the pair with highest path similarity among all pairs. 
@@ -47,7 +47,7 @@ def get_best_synset_pair(word_1, word_2):
                    best_pair = synset_1, synset_2
         return best_pair
 
-@timewrapper
+
 def length_dist(synset_1, synset_2):
     """
     Return a measure of the length of the shortest path in the semantic 
@@ -74,7 +74,7 @@ def length_dist(synset_1, synset_2):
     # normalize path length to the range [0,1]
     return math.exp(-ALPHA * l_dist)
 
-@timewrapper
+
 def hierarchy_dist(synset_1, synset_2):
     """
     Return a measure of depth in the ontology to clustering the fact that
@@ -109,14 +109,14 @@ def hierarchy_dist(synset_1, synset_2):
     return ((math.exp(BETA * h_dist) - math.exp(-BETA * h_dist)) / 
         (math.exp(BETA * h_dist) + math.exp(-BETA * h_dist)))
 
-@timewrapper    
+
 def word_similarity(word_1, word_2):
     synset_pair = get_best_synset_pair(word_1, word_2)
     return (length_dist(synset_pair[0], synset_pair[1]) * 
         hierarchy_dist(synset_pair[0], synset_pair[1]))
 
 ######################### sentence similarity ##########################
-@timewrapper
+
 def most_similar_word(word, word_set):
     """
     Find the word in the joint word set that is most similar to the word
@@ -133,7 +133,7 @@ def most_similar_word(word, word_set):
           sim_word = ref_word
     return sim_word, max_sim
 
-@timewrapper    
+
 def info_content(lookup_word):
     """
     Uses the Brown corpus available in NLTK to calculate a Laplace
@@ -154,7 +154,7 @@ def info_content(lookup_word):
     n = 0 if not brown_freqs.has_key(lookup_word) else brown_freqs[lookup_word]
     return 1.0 - (math.log(n + 1) / math.log(N + 1))
   
-@timewrapper    
+
 def semantic_vector(words, joint_words, info_content_norm):
     """
     Computes the semantic vector of a sentence. The sentence is passed in as
@@ -183,7 +183,7 @@ def semantic_vector(words, joint_words, info_content_norm):
         i = i + 1
     return semvec                
 
-@timewrapper            
+
 def semantic_similarity(sentence_1, sentence_2, info_content_norm):
     """
     Computes the semantic similarity between two sentences as the cosine
@@ -197,7 +197,7 @@ def semantic_similarity(sentence_1, sentence_2, info_content_norm):
     return np.dot(vec_1, vec_2.T) / (np.linalg.norm(vec_1) * np.linalg.norm(vec_2))
 
 ######################### word order similarity ##########################
-@timewrapper
+
 def word_order_vector(words, joint_words, windex):
     """
     Computes the word order vector for a sentence. The sentence is passed
@@ -227,7 +227,7 @@ def word_order_vector(words, joint_words, windex):
         i = i + 1
     return wovec
 
-@timewrapper
+
 def word_order_similarity(sentence_1, sentence_2):
     """
     Computes the word-order similarity between two sentences as the normalized
@@ -242,7 +242,7 @@ def word_order_similarity(sentence_1, sentence_2):
     return 1.0 - (np.linalg.norm(r1 - r2) / np.linalg.norm(r1 + r2))
 
 ######################### overall similarity ##########################
-@timewrapper
+
 def similarity(sentence_1, sentence_2, info_content_norm=True):
     """
     Calculate the semantic similarity between two sentences. The last 
@@ -256,10 +256,6 @@ def similarity(sentence_1, sentence_2, info_content_norm=True):
 def symmetric_sentence_similarity(sentence_1, sentence_2, info_content_norm=True):
     return (similarity(sentence_1, sentence_2, info_content_norm) + \
         similarity(sentence_2, sentence_1, info_content_norm)) / 2.0
-
-
-def sentence_distance(sentence1, sentence2, info_content_norm=True):
-    return 1.0 / symmetric_sentence_similarity(sentence1, sentence2, info_content_norm)
 
 
 ######################### main / test ##########################      
@@ -322,5 +318,5 @@ if __name__ == '__main__':
   ]
   for sent_pair in sentence_pairs:
       print "%s\t%s\t%.3f\t%.3f\t%.3f" % (sent_pair[0], sent_pair[1], sent_pair[2],
-          sentence_distance(sent_pair[0], sent_pair[1], True),
-          sentence_distance(sent_pair[1], sent_pair[0], True))
+           similarity(sent_pair[0], sent_pair[1], True),
+           similarity(sent_pair[1], sent_pair[0], True))
