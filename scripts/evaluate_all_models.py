@@ -24,7 +24,7 @@ n_clusters = 10
 
 af = AffinityPropagation(affinity='precomputed')
 db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed")
-ag = AgglomerativeClustering(n_clusters=n_clusters, affinity="precomputed")
+ag = AgglomerativeClustering(n_clusters=n_clusters)
 km = KMeans(n_clusters=n_clusters)
 
 Model = namedtuple('Model', ['name', 'classification'])
@@ -56,7 +56,7 @@ print("common ids: {}".format(len(intersection_ids)))
 
 y_true = [[t for t in c if t in intersection_ids] for c in golden_standard_clusters]
 other_ids = tweets_ids.difference(intersection_ids)
-X_tweets_ids = set(random.sample(other_ids, random_tweets_n, replace=False)).union(intersection_ids)
+X_tweets_ids = set(random.sample(other_ids, random_tweets_n)).union(intersection_ids)
 X_tweets = [t for t in Tweets if t.id in X_tweets_ids]
 print("running models on {} tweets".format(len(X_tweets)))
 
@@ -67,10 +67,10 @@ for model in [TfIdfModel(), Word2VecModel()]:
     t0 = time.time()
     X = model.build(X_tweets)
     print("took {:.3} sec".format(time.time() - t0))
-    for alg in [km, af, db, ag]:
+    for alg in [km, ag, af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
-        if alg not in km:
+        if alg == af:
             X = distance_matrix(X,X)
         model_fit = alg.fit(X)
         name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)
@@ -85,7 +85,7 @@ for symm in [word_sym, sentence_sym, ish_sym]:
     t0 = time.time()
     X = SentenceSymModel().build(tweets=X_tweets, method=symm)
     print("took {:.3} sec".format(time.time() - t0))
-    for alg in (af, db, ag):
+    for alg in [af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
         model_fit = alg.fit(X)

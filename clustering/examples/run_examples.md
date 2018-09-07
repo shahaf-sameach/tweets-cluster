@@ -25,7 +25,7 @@ build model using<br>
 `km = KMeans(n_clusters=3).fit(X)`
 
 for all other clustered alg need to precompute the distance matrix
-`X = distance.pdist(X)`
+`X = scipy.spatial.distance_matrix(X,X)`
 
 `ward = AgglomerativeClustering(n_clusters=6, affinity="precomputed").fit(X)`<br>
 `af = AffinityPropagation(preference=-50, affinity='precomputed').fit(X)`<br>
