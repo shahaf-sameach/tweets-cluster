@@ -1,7 +1,7 @@
+import random
 import time
 from collections import namedtuple
-import numpy as np
-from scipy.spatial import distance, distance_matrix
+from scipy.spatial import distance_matrix
 
 from sklearn.cluster import KMeans, AffinityPropagation, DBSCAN, AgglomerativeClustering
 
@@ -22,7 +22,7 @@ from database.tweet import TweetBuilder
 random_tweets_n = 1000
 n_clusters = 10
 
-af = AffinityPropagation(preference=-50, affinity='precomputed')
+af = AffinityPropagation(affinity='precomputed')
 db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed")
 ag = AgglomerativeClustering(n_clusters=n_clusters, affinity="precomputed")
 km = KMeans(n_clusters=n_clusters)
@@ -56,7 +56,7 @@ print("common ids: {}".format(len(intersection_ids)))
 
 y_true = [[t for t in c if t in intersection_ids] for c in golden_standard_clusters]
 other_ids = tweets_ids.difference(intersection_ids)
-X_tweets_ids = set(np.random.choice(list(other_ids), random_tweets_n, replace=False)).union(intersection_ids)
+X_tweets_ids = set(random.sample(other_ids, random_tweets_n, replace=False)).union(intersection_ids)
 X_tweets = [t for t in Tweets if t.id in X_tweets_ids]
 print("running models on {} tweets".format(len(X_tweets)))
 
@@ -70,7 +70,7 @@ for model in [TfIdfModel(), Word2VecModel()]:
     for alg in [km, af, db, ag]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
-        if alg not in [km, af]:
+        if alg not in km:
             X = distance_matrix(X,X)
         model_fit = alg.fit(X)
         name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)

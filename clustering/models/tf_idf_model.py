@@ -19,7 +19,7 @@ class TfIdfModel(object):
                                      lowercase=True,
                                      max_features=10000)
 
-        return vectorizer.fit_transform(text)
+        return vectorizer.fit_transform(text).A
 
 
 
