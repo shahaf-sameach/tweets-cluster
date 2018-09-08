@@ -80,7 +80,7 @@ for model in [TfIdfModel()]:#, Word2VecModel()]:
         if alg == af:
             X = distance_matrix(X,X)
         model_fit = alg.fit(X)
-        name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)
+        name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
         models.append({"name": name, "fit": model_fit, 'type': 'vector'})
         print("\ttook {:.3f} sec".format(time.time() - t1))
     print("took {:.3f} sec".format(time.time() - t0))
@@ -97,7 +97,7 @@ for model in [TfIdfModel()]:#, Word2VecModel()]:
 #         print("\tfitting {} ...".format(alg.__class__.__name__))
 #         t1 = time.time()
 #         model_fit = alg.fit(X)
-#         name = "{}_{}_{}".format(model_fit.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
+#         name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
 #         models.append({"name": name, "fit": model_fit, type: 'simm'})
 #         print("\ttook {:.3f} sec".format(time.time() - t1))
 #     print("took {:3.} sec".format(time.time() - t0))
@@ -106,7 +106,7 @@ for model in [TfIdfModel()]:#, Word2VecModel()]:
 
 print("building network model...")
 t0 = time.time()
-network = NetworkModel().build(Tweets)
+network = NetworkModel().build(X_tweets)
 print("took {:.3f} sec".format(time.time() - t0))
 print("fitting models:")
 for alg in [mk]:#, cm, pm]:
@@ -141,7 +141,7 @@ for i, model in enumerate(models):
     header = "purity: {:.3f}\nRand:   {:.3f}".format(purity_score, Rand_score)
 
     name = "{}_{}".format(model['name'], len(clusters))
-    write_clusters_to_files(clusters, header=header)
+    write_clusters_to_files(clusters, header=header, prefix=name)
     print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
 
