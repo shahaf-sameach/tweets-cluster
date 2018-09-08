@@ -50,7 +50,7 @@ for idx, tweet_file in enumerate(file_list,1):
     Tweets.extend([TweetBuilder(t) for t in get_tweets_from_file("{}.json".format(tweet_file))])
     golden_standard_clusters.append(map(int, get_ground_truth("{}.json".format(tweet_file))))
 
-print("took {:.3} sec".format(time.time() - t00))
+print("took {:.3f} sec".format(time.time() - t00))
 print("golden standart clusters size: {}".format([len(c) for c in golden_standard_clusters]))
 print("total tweets from files: {}".format(len(Tweets)))
 
@@ -62,35 +62,36 @@ print("common ids: {}".format(len(intersection_ids)))
 y_true = [[t for t in c if t in intersection_ids] for c in golden_standard_clusters]
 other_ids = tweets_ids.difference(intersection_ids)
 X_tweets_ids = set(random.sample(other_ids, random_tweets_n)).union(intersection_ids)
-X_tweets = [t for t in Tweets if t.id in X_tweets_ids]
+X_tweets_map = {t.id : t for t in Tweets if t.id in X_tweets_ids}
+X_tweets = X_tweets_map.values()
 print("running models on {} tweets".format(len(X_tweets)))
 
 
 models = []
-# for model in [TfIdfModel(), Word2VecModel()]:
-#     print("building {} model...".format(model.__class__.__name__))
-#     t0 = time.time()
-#     X = model.build(X_tweets)
-#     print("took {:.3} sec".format(time.time() - t0))
-#     print("fitting models:")
-#     for alg in [km, ag, af, db]:
-#         print("\tfitting {} ...".format(alg.__class__.__name__))
-#         t1 = time.time()
-#         if alg == af:
-#             X = distance_matrix(X,X)
-#         model_fit = alg.fit(X)
-#         name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)
-#         models.append({"name": name, "fit": model_fit, 'type': 'vector'})
-#         print("\ttook {:.3} sec".format(time.time() - t1))
-#     print("took {:.3} sec".format(time.time() - t0))
-#     print("\n")
+for model in [TfIdfModel()]:#, Word2VecModel()]:
+    print("building {} model...".format(model.__class__.__name__))
+    t0 = time.time()
+    X = model.build(X_tweets)
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("fitting models:")
+    for alg in [km, ag, af, db]:
+        print("\tfitting {} ...".format(alg.__class__.__name__))
+        t1 = time.time()
+        if alg == af:
+            X = distance_matrix(X,X)
+        model_fit = alg.fit(X)
+        name = "{}_{}".format(model_fit.__class__.__name__ ,model.__class__.__name__)
+        models.append({"name": name, "fit": model_fit, 'type': 'vector'})
+        print("\ttook {:.3f} sec".format(time.time() - t1))
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("\n")
 
-
+#
 # for simm_name, simm in zip(['word_sym', 'sentence_sym', 'ish_sym'], [word_sym, sentence_sym, ish_sym]):
 #     print("building SentenceSymModel model with {} ...".format(simm_name))
 #     t0 = time.time()
 #     X = SentenceSymModel().build(tweets=X_tweets, method=simm)
-#     print("took {:.3} sec".format(time.time() - t0))
+#     print("took {:.3f} sec".format(time.time() - t0))
 #     print("fitting models:")
 #     for alg in [af, db]:
 #         print("\tfitting {} ...".format(alg.__class__.__name__))
@@ -98,7 +99,7 @@ models = []
 #         model_fit = alg.fit(X)
 #         name = "{}_{}_{}".format(model_fit.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
 #         models.append({"name": name, "fit": model_fit, type: 'simm'})
-#         print("\ttook {:.3} sec".format(time.time() - t1))
+#         print("\ttook {:.3f} sec".format(time.time() - t1))
 #     print("took {:3.} sec".format(time.time() - t0))
 #     print("\n")
 
@@ -106,16 +107,16 @@ models = []
 print("building network model...")
 t0 = time.time()
 network = NetworkModel().build(Tweets)
-print("took {} sec".format(time.time() - t0))
+print("took {:.3f} sec".format(time.time() - t0))
 print("fitting models:")
-for alg in [mk, cm, pm]:
+for alg in [mk]:#, cm, pm]:
     print("\tfitting {} ...".format(alg.__class__.__name__))
     t1 = time.time()
     clusters = alg.fit(network)
     name = "{}".format(alg.__class__.__name__ )
     models.append({"name" : name, "fit" : clusters, 'type': 'network'})
-    print("\ttook {:.3} sec".format(time.time() - t1))
-print("took {:.3} sec".format(time.time() - t0))
+    print("\ttook {:.3f} sec".format(time.time() - t1))
+print("took {:.3f} sec".format(time.time() - t0))
 print("\n")
 
 print("\n")
@@ -125,6 +126,7 @@ for i, model in enumerate(models):
     y_pred = None
     if model['type'] == 'network':
         y_pred = model['fit']
+        clusters = [[X_tweets_map[t_id] for t_id in cluster] for cluster in y_pred]
     else:
         fit = model['fit']
         clusters = [[] for l in set(fit.labels_)]
@@ -136,12 +138,12 @@ for i, model in enumerate(models):
     purity_score = purity(y_true, y_pred)
     Rand_score = Rand(y_true, y_pred)
 
-    header = "purity: {:.3}\nRand:   {:.3}".format(purity_score, Rand_score)
+    header = "purity: {:.3f}\nRand:   {:.3f}".format(purity_score, Rand_score)
 
     name = "{}_{}".format(model['name'], len(clusters))
     write_clusters_to_files(clusters, header=header)
-    print("took {:.3} sec".format(time.time() - t0))
+    print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
 
-print("took total of {:.3} sec".format(time.time() - t00))
+print("took total of {:.3f} sec".format(time.time() - t00))
 print("done")
