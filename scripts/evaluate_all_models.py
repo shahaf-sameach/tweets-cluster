@@ -68,55 +68,55 @@ print("running models on {} tweets".format(len(X_tweets)))
 
 
 models = []
-for model in [TfIdfModel(), Word2VecModel()]:
-    print("building {} model...".format(model.__class__.__name__))
-    t0 = time.time()
-    X = model.build(X_tweets)
-    print("took {:.3f} sec".format(time.time() - t0))
-    print("fitting models:")
-    for alg in [km, ag, af, db]:
-        print("\tfitting {} ...".format(alg.__class__.__name__))
-        t1 = time.time()
-        if alg == af:
-            X = distance_matrix(X,X)
-        model_fit = alg.fit(X)
-        name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
-        models.append({"name": name, "fit": model_fit, 'type': 'vector'})
-        print("\ttook {:.3f} sec".format(time.time() - t1))
-    print("took {:.3f} sec".format(time.time() - t0))
-    print("\n")
-
-# for simm_name, simm in zip(['word_sym', 'sentence_sym', 'ish_sym'], [word_sym, sentence_sym, ish_sym]):
-#     print("building SentenceSymModel model with {} ...".format(simm_name))
+# for model in [TfIdfModel(), Word2VecModel()]:
+#     print("building {} model...".format(model.__class__.__name__))
 #     t0 = time.time()
-#     X = SentenceSymModel().build(tweets=X_tweets, method=simm)
+#     X = model.build(X_tweets)
 #     print("took {:.3f} sec".format(time.time() - t0))
 #     print("fitting models:")
-#     for alg in [af, db]:
+#     for alg in [km, ag, af, db]:
 #         print("\tfitting {} ...".format(alg.__class__.__name__))
 #         t1 = time.time()
+#         if alg == af:
+#             X = distance_matrix(X,X)
 #         model_fit = alg.fit(X)
-#         name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
-#         models.append({"name": name, "fit": model_fit, type: 'simm'})
+#         name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
+#         models.append({"name": name, "fit": model_fit, 'type': 'vector'})
 #         print("\ttook {:.3f} sec".format(time.time() - t1))
-#     print("took {:3.} sec".format(time.time() - t0))
+#     print("took {:.3f} sec".format(time.time() - t0))
 #     print("\n")
 
+for simm_name, simm in zip(['word_sym', 'sentence_sym', 'ish_sym'], [word_sym, sentence_sym, ish_sym]):
+    print("building SentenceSymModel model with {} ...".format(simm_name))
+    t0 = time.time()
+    X = SentenceSymModel().build(tweets=X_tweets, method=simm)
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("fitting models:")
+    for alg in [af, db]:
+        print("\tfitting {} ...".format(alg.__class__.__name__))
+        t1 = time.time()
+        model_fit = alg.fit(X)
+        name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
+        models.append({"name": name, "fit": model_fit, type: 'simm'})
+        print("\ttook {:.3f} sec".format(time.time() - t1))
+    print("took {:3.} sec".format(time.time() - t0))
+    print("\n")
 
-print("building network model...")
-t0 = time.time()
-network = NetworkModel().build(X_tweets)
-print("took {:.3f} sec".format(time.time() - t0))
-print("fitting models:")
-for alg in [mk, cm, pm]:
-    print("\tfitting {} ...".format(alg.__class__.__name__))
-    t1 = time.time()
-    clusters = alg.fit(network)
-    name = "{}".format(alg.__class__.__name__ )
-    models.append({"name" : name, "fit" : clusters, 'type': 'network'})
-    print("\ttook {:.3f} sec".format(time.time() - t1))
-print("took {:.3f} sec".format(time.time() - t0))
-print("\n")
+
+# print("building network model...")
+# t0 = time.time()
+# network = NetworkModel().build(X_tweets)
+# print("took {:.3f} sec".format(time.time() - t0))
+# print("fitting models:")
+# for alg in [mk, cm, pm]:
+#     print("\tfitting {} ...".format(alg.__class__.__name__))
+#     t1 = time.time()
+#     clusters = alg.fit(network)
+#     name = "{}".format(alg.__class__.__name__ )
+#     models.append({"name" : name, "fit" : clusters, 'type': 'network'})
+#     print("\ttook {:.3f} sec".format(time.time() - t1))
+# print("took {:.3f} sec".format(time.time() - t0))
+# print("\n")
 
 print("\n")
 for i, model in enumerate(models):
