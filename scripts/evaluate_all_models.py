@@ -84,21 +84,24 @@ for model in [TfIdfModel(), Word2VecModel()]:
     print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
 
-# for simm_name, simm in zip(['word_sym', 'sentence_sym', 'ish_sym'], [word_sym, sentence_sym, ish_sym]):
-#     print("building SentenceSymModel model with {} ...".format(simm_name))
-#     t0 = time.time()
-#     X = SentenceSymModel().build(tweets=X_tweets, method=simm)
-#     print("took {:3.} sec".format(time.time() - t0))
-#     print("fitting models:")
-#     for alg in [af, db]:
-#         print("\tfitting {} ...".format(alg.__class__.__name__))
-#         t1 = time.time()
-#         model_fit = alg.fit(X)
-#         name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm_name)
-#         models.append({"name": name, "fit": model_fit, type: 'simm'})
-#         print("\ttook {:.3f} sec".format(time.time() - t1))
-#     print("took {:3.} sec".format(time.time() - t0))
-#     print("\n")
+for simm in [word_sym, sentence_sym, ish_sym]:
+    if simm in [word_sym, sentence_sym]:
+        continue
+
+    print("building SentenceSymModel model with {} ...".format(simm.__name__))
+    t0 = time.time()
+    X = SentenceSymModel().build(tweets=X_tweets, metric=simm)
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("fitting models:")
+    for alg in [af, db]:
+        print("\tfitting {} ...".format(alg.__class__.__name__))
+        t1 = time.time()
+        model_fit = alg.fit(X)
+        name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm.__name__)
+        models.append({"name": name, "fit": model_fit, type: 'simm'})
+        print("\ttook {:.3f} sec".format(time.time() - t1))
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("\n")
 
 
 print("building network model...")
