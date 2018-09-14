@@ -21,7 +21,7 @@ class SentenceSymModel(object):
         m = np.zeros((data_len, data_len))
         np.fill_diagonal(m, 1.0)
 
-        total_count, count = 1,1
+        total_count, count = 1, 1
         for i in xrange(data_len):
             for j in xrange(i + 1, data_len):
                 total_count += 1

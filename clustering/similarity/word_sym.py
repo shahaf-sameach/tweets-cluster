@@ -71,8 +71,6 @@ def sentence_similarity(sentence1, sentence2):
 def symmetric_sentence_similarity(sentence1, sentence2):
     """ compute the sentence similarity using Wordnet """
     # Tokenize and tag
-    v1 = (sentence1 + '.')[:-1]
-    v2 = (sentence2 + '.')[:-1]
     sentence1 = pos_tag(word_tokenize(sentence1))
     sentence2 = pos_tag(word_tokenize(sentence2))
 
@@ -117,6 +115,7 @@ def symmetric_sentence_similarity(sentence1, sentence2):
             count += 1
 
     sentence2_score = score / count if count > 0 else score
+
     return (sentence1_score + sentence2_score) / 2.0
 
 
@@ -134,6 +133,7 @@ if __name__ == "__main__":
     for sentence in sentences:
         print "Similarity(\"%s\", \"%s\") = %s" % (focus_sentence, sentence, sentence_similarity(focus_sentence, sentence))
         print "Similarity(\"%s\", \"%s\") = %s" % (sentence, focus_sentence, sentence_similarity(sentence, focus_sentence))
+        print "Symm Similarity(\"%s\", \"%s\") = %s" % (sentence, focus_sentence, symmetric_sentence_similarity(sentence, focus_sentence))
         print
 
     # Similarity("Cats are beautiful animals.", "Dogs are awesome.") = 0.511111111111
