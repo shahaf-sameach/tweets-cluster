@@ -4,6 +4,7 @@ from scipy.spatial import distance_matrix
 
 from sklearn.cluster import KMeans, AffinityPropagation, DBSCAN, AgglomerativeClustering
 
+from clustering.models.statistic_model import StatisticModel
 from clustering.network.community_clustering import CommunityCluster
 from clustering.network.markov_cluster import MarkovCluster
 from clustering.network.prime_clustering import PrimCluster
@@ -84,23 +85,36 @@ for model in [TfIdfModel(), Word2VecModel()]:
     print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
 
-for simm in [word_sym, sentence_sym, ish_sym]:
-    if simm in [word_sym, sentence_sym]:
+for symm, symm_name in [(word_sym, "word_sym"), (sentence_sym, "sentence_sym"), (ish_sym, "ish_sym")]:
+    if symm in [word_sym, sentence_sym]:
         continue
 
-    print("building SentenceSymModel model with {} ...".format(simm.__name__))
+    print("building SentenceSymModel model with {} ...".format(symm_name))
     t0 = time.time()
-    X = SentenceSymModel().build(tweets=X_tweets, metric=simm)
+    X = SentenceSymModel().build(tweets=X_tweets, metric=symm)
     print("took {:.3f} sec".format(time.time() - t0))
     print("fitting models:")
     for alg in [af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
         model_fit = alg.fit(X)
-        name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, simm.__name__)
+        name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, symm_name)
         models.append({"name": name, "fit": model_fit, type: 'simm'})
         print("\ttook {:.3f} sec".format(time.time() - t1))
     print("took {:.3f} sec".format(time.time() - t0))
+    print("\n")
+
+for metric in ['bow', 'tfidf']:
+    print("building StatisticModel model with metric {} ...".format(metric))
+    t0 = time.time()
+    model = StatisticModel(n_cluster=n_clusters, metric=metric).build(tweets=X_tweets)
+    print("took {:.3f} sec".format(time.time() - t0))
+    print("fitting models:")
+    model_fit = model.fit(tweets=X_tweets)
+    name = "StatisticModel_{}".format(metric)
+    models.append({"name": name, "fit": model_fit, type: 'stats'})
+    t1 = time.time()
+    print("took {:.3f} sec".format(time.time() - t1))
     print("\n")
 
 
@@ -124,7 +138,7 @@ for i, model in enumerate(models):
     print("evaluating model {} {}/{} ...".format(model['name'], i, len(models)))
     t0 = time.time()
     y_pred = None
-    if model['type'] == 'network':
+    if model['type'] in ['network', 'stats']:
         y_pred = model['fit']
         clusters = [[X_tweets_map[t_id] for t_id in cluster] for cluster in y_pred]
     else:

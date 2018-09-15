@@ -43,6 +43,14 @@ Community<br>
 Prim<br>
 `PrimCluster().fit(network)`
 
+### Statistical Model
+build model<br>
+`model = StatisticModel().build(Tweets)`
+
+fit<br>
+`clusters = model.fit(Tweets)`
+
+
 
 
 
