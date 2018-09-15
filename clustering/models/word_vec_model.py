@@ -4,10 +4,10 @@ return tweet vectors by the avg of word2vec of the tweet's words
 (run against the brown and all tweet's sentences corpus
 """
 
-
 import numpy as np
 from gensim.models import Word2Vec
 from nltk.corpus import brown
+
 
 class Word2VecModel(object):
 

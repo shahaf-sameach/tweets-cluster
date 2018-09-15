@@ -1,10 +1,4 @@
-import random
-import time
-
 import gensim
-
-from database.tweet import TweetBuilder
-from utils.files import get_tweets_from_file, get_ground_truth
 from utils.text_proccesing import process_text
 
 
@@ -44,7 +38,7 @@ class StatisticModel(object):
         clusters = [[] for _ in xrange(self.n_cluster)]
         for idx, result in enumerate(self.lda_model[corpus]):
             cluster = max(result, key=lambda k:k[1])
-            clusters[cluster[0]].append(Tweets[idx].id)
+            clusters[cluster[0]].append(tweets[idx].id)
 
         return clusters
 
