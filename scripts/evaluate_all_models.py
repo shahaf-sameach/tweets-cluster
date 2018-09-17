@@ -59,11 +59,11 @@ intersection_ids = golden_standard_ids.intersection(tweets_ids)
 print("common ids: {}".format(len(intersection_ids)))
 
 y_true = [[t for t in c if t in intersection_ids] for c in golden_standard_clusters]
+# y_true = [random.sample(cluster, random_tweets_n) for cluster in y_true]
+# X_tweets_ids = set([t_id for cluster in y_true for t_id in cluster])
 
-X_tweets_ids = set([t_id for cluster in y_true for t_id in random.sample(cluster, random_tweets_n)])
-
-# other_ids = tweets_ids.difference(intersection_ids)
-# X_tweets_ids = set(random.sample(other_ids, random_tweets_n)).union(intersection_ids)
+other_ids = tweets_ids.difference(intersection_ids)
+X_tweets_ids = set(random.sample(other_ids, random_tweets_n)).union(intersection_ids)
 
 X_tweets_map = {t.id : t for t in Tweets if t.id in X_tweets_ids}
 X_tweets = X_tweets_map.values()
@@ -71,39 +71,39 @@ print("running models on {} tweets".format(len(X_tweets)))
 
 
 models = []
-# for model in [TfIdfModel(), Word2VecModel()]:
-#     print("building {} model...".format(model.__class__.__name__))
-#     t0 = time.time()
-#     X = model.build(X_tweets)
-#     print("took {:.3f} sec".format(time.time() - t0))
-#     print("fitting models:")
-#     for alg in [km, ag, af, db]:
-#         print("\tfitting {} ...".format(alg.__class__.__name__))
-#         t1 = time.time()
-#         if alg == af:
-#             X = distance_matrix(X,X)
-#         model_fit = alg.fit(X)
-#         name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
-#         models.append({"name": name, "fit": model_fit, 'type': 'vector'})
-#         print("\ttook {:.3f} sec".format(time.time() - t1))
-#     print("took {:.3f} sec".format(time.time() - t0))
-#     print("\n")
-
-for symm, symm_name in [(word_sym, "word_sym"), (sentence_sym, "sentence_sym"), (ish_sym, "ish_sym")]:
-    print("building SentenceSymModel model with {} ...".format(symm_name))
+for model in [TfIdfModel(), Word2VecModel()]:
+    print("building {} model...".format(model.__class__.__name__))
     t0 = time.time()
-    X = SentenceSymModel().build(tweets=X_tweets, metric=symm)
+    X = model.build(X_tweets)
     print("took {:.3f} sec".format(time.time() - t0))
     print("fitting models:")
-    for alg in [af, db]:
+    for alg in [km, ag]:#, af, db]:
         print("\tfitting {} ...".format(alg.__class__.__name__))
         t1 = time.time()
+        if alg == af:
+            X = distance_matrix(X,X)
         model_fit = alg.fit(X)
-        name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, symm_name)
-        models.append({"name": name, "fit": model_fit, 'type': 'simm'})
+        name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
+        models.append({"name": name, "fit": model_fit, 'type': 'vector'})
         print("\ttook {:.3f} sec".format(time.time() - t1))
     print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
+
+# for symm, symm_name in [(word_sym, "word_sym"), (sentence_sym, "sentence_sym"), (ish_sym, "ish_sym")]:
+#     print("building SentenceSymModel model with {} ...".format(symm_name))
+#     t0 = time.time()
+#     X = SentenceSymModel().build(tweets=X_tweets, metric=symm)
+#     print("took {:.3f} sec".format(time.time() - t0))
+#     print("fitting models:")
+#     for alg in [af, db]:
+#         print("\tfitting {} ...".format(alg.__class__.__name__))
+#         t1 = time.time()
+#         model_fit = alg.fit(X)
+#         name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, symm_name)
+#         models.append({"name": name, "fit": model_fit, 'type': 'simm'})
+#         print("\ttook {:.3f} sec".format(time.time() - t1))
+#     print("took {:.3f} sec".format(time.time() - t0))
+#     print("\n")
 
 # for metric in ['bow', 'tfidf']:
 #     print("building StatisticModel model with metric {} ...".format(metric))
