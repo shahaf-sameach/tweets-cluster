@@ -14,26 +14,25 @@ from clustering.models.sentence_sym_model import SentenceSymModel
 from clustering.models.tf_idf_model import TfIdfModel
 from clustering.models.word_vec_model import Word2VecModel
 
-from clustering.similarity.word_sym import symmetric_sentence_similarity as word_sym
-from clustering.similarity.sentence_sym import symmetric_sentence_similarity as sentence_sym
-from clustering.similarity.ish import symmetric_sentence_similarity as ish_sym
+from clustering.similarity.word_sym import symmetric_sentence_similarity as word_dist
+from clustering.similarity.sentence_sym import symmetric_sentence_similarity as sentence_dist
+from clustering.similarity.ish import symmetric_sentence_similarity as ish_dist
 from utils.evaluate import purity, Rand
 
 from utils.files import get_tweets_from_file, get_ground_truth, write_clusters_to_files
 
 from database.tweet import TweetBuilder
 
-random_tweets_n = 50
+def clusters_from_labels(Tweets, labels):
+    clusters = [[] for l in set(labels)]
+    for idx, t in enumerate(Tweets):
+        clusters[labels[idx]].append(t.id)
+
+    return clusters
+
+
+random_tweets_n = 1000
 n_clusters = 20
-
-af = AffinityPropagation(affinity='precomputed')
-db = DBSCAN(eps=0.3, min_samples=3, metric="precomputed")
-ag = AgglomerativeClustering(n_clusters=n_clusters)
-km = KMeans(n_clusters=n_clusters)
-
-mk = MarkovCluster()
-cm = CommunityCluster(n_clusters=n_clusters)
-pm = PrimCluster(n_clusters=n_clusters)
 
 file_list = list(map(lambda f: "2017_{}".format(f),
                      ["03_28", "04_06", "04_07", "04_17", "05_24", "08_09",
@@ -71,91 +70,149 @@ print("running models on {} tweets".format(len(X_tweets)))
 
 
 models = []
-for model in [TfIdfModel(), Word2VecModel()]:
-    print("building {} model...".format(model.__class__.__name__))
-    t0 = time.time()
-    X = model.build(X_tweets)
-    print("took {:.3f} sec".format(time.time() - t0))
-    print("fitting models:")
-    for alg in [km, ag]:#, af, db]:
-        print("\tfitting {} ...".format(alg.__class__.__name__))
-        t1 = time.time()
-        if alg == af:
-            X = distance_matrix(X,X)
-        model_fit = alg.fit(X)
-        name = "{}_{}".format(alg.__class__.__name__,model.__class__.__name__)
-        models.append({"name": name, "fit": model_fit, 'type': 'vector'})
-        print("\ttook {:.3f} sec".format(time.time() - t1))
-    print("took {:.3f} sec".format(time.time() - t0))
-    print("\n")
 
-# for symm, symm_name in [(word_sym, "word_sym"), (sentence_sym, "sentence_sym"), (ish_sym, "ish_sym")]:
-#     print("building SentenceSymModel model with {} ...".format(symm_name))
-#     t0 = time.time()
-#     X = SentenceSymModel().build(tweets=X_tweets, metric=symm)
-#     print("took {:.3f} sec".format(time.time() - t0))
-#     print("fitting models:")
-#     for alg in [af, db]:
-#         print("\tfitting {} ...".format(alg.__class__.__name__))
-#         t1 = time.time()
-#         model_fit = alg.fit(X)
-#         name = "{}_{}_{}".format(alg.__class__.__name__, SentenceSymModel().__class__.__name__, symm_name)
-#         models.append({"name": name, "fit": model_fit, 'type': 'simm'})
-#         print("\ttook {:.3f} sec".format(time.time() - t1))
-#     print("took {:.3f} sec".format(time.time() - t0))
-#     print("\n")
+# Vector Model
+# TF-IDF
+X = TfIdfModel().build(X_tweets)
+model_name = "TF-IDF"
 
-# for metric in ['bow', 'tfidf']:
-#     print("building StatisticModel model with metric {} ...".format(metric))
-#     t0 = time.time()
-#     model = StatisticModel(n_cluster=n_clusters, metric=metric).build(tweets=X_tweets)
-#     print("took {:.3f} sec".format(time.time() - t0))
-#     print("fitting models:")
-#     model_fit = model.fit(tweets=X_tweets)
-#     name = "StatisticModel_{}".format(metric)
-#     models.append({"name": name, "fit": model_fit, 'type': 'stats'})
-#     t1 = time.time()
-#     print("took {:.3f} sec".format(time.time() - t1))
-#     print("\n")
+# KMeans
+labels = KMeans(n_clusters=n_clusters).fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "KMeans_{}".format(model_name), "clusters": clusters})
+
+# Agglomerative Clustering
+labels = AgglomerativeClustering(n_clusters=n_clusters).fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "Agglomerative_{}".format(model_name), "clusters": clusters})
+
+# Affinity Propagation
+X = distance_matrix(X,X)
+labels = AffinityPropagation(affinity='precomputed').fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "AffinityPropagation_{}".format(model_name), "clusters": clusters})
+
+# DBSCAN
+labels = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "DBSCAN_{}".format(model_name), "clusters": clusters})
 
 
-# print("building network model...")
-# t0 = time.time()
-# network = NetworkModel().build(X_tweets)
-# print("took {:.3f} sec".format(time.time() - t0))
-# print("fitting models:")
-# for alg in [mk, cm, pm]:
-#     print("\tfitting {} ...".format(alg.__class__.__name__))
-#     t1 = time.time()
-#     clusters = alg.fit(network)
-#     name = "{}".format(alg.__class__.__name__ )
-#     models.append({"name" : name, "fit" : clusters, 'type': 'network'})
-#     print("\ttook {:.3f} sec".format(time.time() - t1))
-# print("took {:.3f} sec".format(time.time() - t0))
-# print("\n")
 
+# Word2Vec
+X = Word2VecModel().build(X_tweets)
+model_name = "Word2Vec"
+
+# KMeans
+labels = KMeans(n_clusters=n_clusters).fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "KMeans_{}".format(model_name), "clusters": clusters})
+
+# Agglomerative Clustering
+labels = AgglomerativeClustering(n_clusters=n_clusters).fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "Agglomerative_{}".format(model_name), "clusters": clusters})
+
+# Affinity Propagation
+X = distance_matrix(X,X)
+labels = AffinityPropagation(affinity='precomputed').fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "AffinityPropagation_{}".format(model_name), "clusters": clusters})
+
+# DBSCAN
+labels = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit_predict(X)
+clusters = clusters_from_labels(X_tweets, labels)
+models.append({"name": "DBSCAN_{}".format(model_name), "clusters": clusters})
+
+
+# # Similarity Model
+# # Word Distance
+# X = SentenceSymModel().build(tweets=X_tweets, metric=word_dist)
+# model_name="WordDist"
+#
+# # Affinity Propagation
+# labels = AffinityPropagation(affinity='precomputed').fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "AffinityPropagation_{}".format(model_name), "clusters": clusters})
+#
+# # DBSCAN
+# labels = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "DBSCAN_{}".format(model_name), "clusters": clusters})
+#
+#
+# # Sentence Distance
+# X = SentenceSymModel().build(tweets=X_tweets, metric=sentence_dist)
+# model_name="SentenceDist"
+#
+# # Affinity Propagation
+# labels = AffinityPropagation(affinity='precomputed').fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "AffinityPropagation_{}".format(model_name), "clusters": clusters})
+#
+# # DBSCAN
+# labels = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "DBSCAN_{}".format(model_name), "clusters": clusters})
+#
+#
+# # ish Distance
+# X = SentenceSymModel().build(tweets=X_tweets, metric=ish_dist)
+# model_name="ishDist"
+#
+# # Affinity Propagation
+# labels = AffinityPropagation(affinity='precomputed').fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "AffinityPropagation_{}".format(model_name), "clusters": clusters})
+#
+# # DBSCAN
+# labels = DBSCAN(eps=0.3, min_samples=3, metric="precomputed").fit_predict(X)
+# clusters = clusters_from_labels(X_tweets, labels)
+# models.append({"name": "DBSCAN_{}".format(model_name), "clusters": clusters})
+
+
+# Statistic Model
+# TF-IDF
+model = StatisticModel(n_cluster=n_clusters, metric='tf-idf').build(tweets=X_tweets)
+clusters = model.fit(tweets=X_tweets)
+models.append({"name": "Statistic_TF-IDF", "clusters": clusters})
+
+# Bag of Words
+model = StatisticModel(n_cluster=n_clusters, metric='bow').build(tweets=X_tweets)
+clusters = model.fit(tweets=X_tweets)
+models.append({"name": "Statistic_BOW", "clusters": clusters})
+
+
+# Network model
+network = NetworkModel().build(X_tweets)
+
+# Markov
+clusters = MarkovCluster().fit(network)
+models.append({"name": "Markov_Clustering", "clusters": clusters})
+
+# Community
+clusters = CommunityCluster(n_clusters=n_clusters).fit(network)
+models.append({"name": "Community_Clustering", "clusters": clusters})
+
+# Prim
+clusters = PrimCluster(n_clusters=n_clusters)
+models.append({"name": "Prim_Clustering", "clusters": clusters})
+
+
+# evaluate models
 print("\n")
 for i, model in enumerate(models):
     print("evaluating model {} {}/{} ...".format(model['name'], i, len(models)))
     t0 = time.time()
-    y_pred = None
-    if model['type'] in ['network', 'stats']:
-        y_pred = model['fit']
-        clusters = [[X_tweets_map[t_id] for t_id in cluster] for cluster in y_pred]
-    else:
-        fit = model['fit']
-        clusters = [[] for l in set(fit.labels_)]
-        for idx, t in enumerate(X_tweets):
-            clusters[fit.labels_[idx]].append(t)
-
-        y_pred = [[t.id for t in c] for c in clusters]
+    y_pred = model['clusters']
+    complete_clusters = [[X_tweets_map[t_id] for t_id in cluster] for cluster in y_pred]
 
     purity_score = purity(y_true, y_pred)
     Rand_score = Rand(y_true, y_pred)
 
     header = "purity: {:.3f}\nRand:   {:.3f}".format(purity_score, Rand_score)
 
-    write_clusters_to_files(clusters, header=header, prefix=model['name'])
+    write_clusters_to_files(complete_clusters, header=header, prefix=model['name'])
     print("took {:.3f} sec".format(time.time() - t0))
     print("\n")
 
