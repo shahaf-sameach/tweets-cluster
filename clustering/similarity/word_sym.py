@@ -33,8 +33,6 @@ def tagged_to_synset(word, tag):
 def sentence_similarity(sentence1, sentence2):
     """ compute the sentence similarity using Wordnet """
     # Tokenize and tag
-    v1 = (sentence1 + '.')[:-1]
-    v2 = (sentence2 + '.')[:-1]
     sentence1 = pos_tag(word_tokenize(sentence1))
     sentence2 = pos_tag(word_tokenize(sentence2))
 

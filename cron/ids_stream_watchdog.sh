@@ -3,8 +3,8 @@
 mkdir -p "/home/ir/sameacs/tweets-cluster/pids"
 PIDFILE="/home/ir/sameacs/tweets-cluster/pids/ids_stream.pid"
 
-if [ -e "${PIDFILE}" ] && (ps -u $(whoami) -opid= |
-                           grep -P "^\s*$(cat ${PIDFILE})$" &> /dev/null); then
+
+if [ -e "${PIDFILE}" ] && (ps -u $(whoami) -opid= | grep -P "^\s*$(cat ${PIDFILE})$" &> /dev/null); then
   echo "$(date '+%d/%m/%Y %H:%M:%S') Stream by ids Already running."
   exit 99
 fi

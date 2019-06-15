@@ -24,6 +24,8 @@ def write_clusters_to_files(clusters, header=None, prefix="clusters"):
             f.write("\n\n\n")
         f.write("\n")
 
+    print "wrote clusters to {}".format(file_name)
+
 
 
 def get_tweets_from_file(file_name):
