@@ -27,7 +27,7 @@ cryptography==2.1.4
 cycler==0.10.0
 dahuffman==0.2
 decorator==4.2.1
-Django==1.9.6
+Django==1.11.29
 djangorestframework==3.7.1
 docutils==0.14
 enum34==1.1.6
