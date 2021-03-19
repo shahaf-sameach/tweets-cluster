@@ -49,7 +49,7 @@ idna==2.6
 ipaddress==1.0.18
 ipython-genutils==0.2.0
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 jmespath==0.9.3
 jsondatabase==0.1.7
 jsonschema==2.6.0
