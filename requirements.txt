@@ -113,7 +113,7 @@ tldextract==2.2.0
 torch==0.2.0.post3
 torchvision==0.1.9
 traitlets==4.3.2
-urllib3==1.22
+urllib3==1.26.5
 vine==1.1.4
 Werkzeug==0.14.1
 wxPython==3.0.2.0
