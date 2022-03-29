@@ -75,7 +75,7 @@ olefile==0.44
 opencv-python==3.4.0.12
 packaging==16.8
 pandas==0.13.1
-paramiko==2.4.0
+paramiko==2.10.1
 pbr==3.0.0
 Pillow==4.0.0
 plotly==2.5.0
