@@ -68,7 +68,7 @@ MySQL-python==1.2.5
 nbformat==4.4.0
 networkx==2.1
 nltk==3.3
-numpy==1.14.0
+numpy==1.22.0
 oauth2==1.9.0.post1
 oauthlib==2.0.2
 olefile==0.44
